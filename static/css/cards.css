@@ -1,0 +1,59 @@
+html, body {
+  margin: 0;
+  padding: 0;
+  background: #ffffff; /* ✅ pure white */
+}
+
+/* SECTION */
+.cards-section {
+  background: #ffffff;
+}
+
+/* WRAPPER */
+.wrapper {
+  max-width: 600px;
+  margin: 0 auto;
+  padding-bottom: 120px; /* space to scroll */
+}
+
+/* CARD */
+.card {
+  position: sticky;
+  top: 80px;                 /* navbar ke neeche */
+  height: calc(100vh - 120px); /* 🔑 ONE IMAGE = ONE PAGE */
+
+  border-radius: 14px;
+  overflow: hidden;
+  background: white;
+
+  margin-bottom: 40px;
+}
+
+/* IMAGE */
+.img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* LEFT–RIGHT STACK FEEL (subtle) */
+.card:nth-child(odd) {
+  transform: translateX(0px);
+}
+
+.card:nth-child(even) {
+  transform: translateX(0px);
+}
+
+/* MOBILE FIX */
+@media (max-width: 768px) {
+  .card {
+    transform: none !important;
+    height: 80vh;
+  }
+}
+h1{
+    text-align: center;
+    margin-bottom: 20px;
+}
