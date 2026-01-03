@@ -1,0 +1,14 @@
+
+
+python-dotenv
+fastapi
+uvicorn
+jinja2
+python-multipart
+starlette
+passlib[bcrypt]
+authlib
+deepface
+opencv-python
+pillow
+tensorflow
