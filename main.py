@@ -89,10 +89,10 @@ def signup(request: Request,
             (name, email, hashed)
         )
         conn.commit()
-    except:
+    except sqlite3.IntegrityError:
         return templates.TemplateResponse(
             "signup.html",
-            {"request": request, "error": "Email already exists"}
+            {"request": request, "error": "Email or name already exists"}
         )
 
     return RedirectResponse("/login", 303)
