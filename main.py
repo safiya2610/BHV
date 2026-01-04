@@ -1,21 +1,22 @@
-from fastapi import FastAPI, Request, Form, UploadFile, File
+from fastapi import FastAPI, Request, Form, UploadFile, File, Depends, HTTPException
 from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
+from fastapi.staticfiles import StaticFiles
 from starlette.middleware.sessions import SessionMiddleware
 from passlib.context import CryptContext
-from fastapi.staticfiles import StaticFiles
-import sqlite3
 
+import sqlite3
 import os
 import uuid
 import shutil
 import json
+from pathlib import Path
 
-from db import cur, conn, init_db
+from db import get_db, init_db
 from narrative import router as narrative_router
 from fuzzy_emotion import detect_fuzzy_emotion
-from config import SECRET_KEY
-from auth_google import oauth   # 🔥 IMPORTANT
+from config import SECRET_KEY, GOOGLE_REDIRECT_URI
+from auth_google import oauth
 
 # ================= APP INIT =================
 app = FastAPI()
@@ -28,18 +29,23 @@ app.include_router(narrative_router)
 templates = Jinja2Templates(directory="templates")
 pwd_ctx = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-UPLOAD_DIR = "static/uploads"
-os.makedirs(UPLOAD_DIR, exist_ok=True)
+UPLOAD_DIR = Path("static/uploads").resolve()
+UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 
 # ================= GOOGLE OAUTH =================
 @app.get("/login/google")
 async def login_google(request: Request):
-    redirect_uri = "http://127.0.0.1:8000/auth/google"
-    return await oauth.google.authorize_redirect(request, redirect_uri)
+    return await oauth.google.authorize_redirect(
+        request,
+        GOOGLE_REDIRECT_URI
+    )
 
 
 @app.get("/auth/google")
-async def google_callback(request: Request):
+async def google_callback(
+    request: Request,
+    db: sqlite3.Connection = Depends(get_db)
+):
     token = await oauth.google.authorize_access_token(request)
     user = token.get("userinfo")
 
@@ -49,6 +55,7 @@ async def google_callback(request: Request):
     email = user["email"]
     name = user.get("name") or email.split("@")[0]
 
+    cur = db.cursor()
     cur.execute("SELECT name FROM users WHERE email=?", (email,))
     row = cur.fetchone()
 
@@ -57,7 +64,7 @@ async def google_callback(request: Request):
             "INSERT INTO users (name, email, password) VALUES (?, ?, ?)",
             (name, email, "")
         )
-        conn.commit()
+        db.commit()
 
     request.session["user"] = name
     return RedirectResponse("/", 303)
@@ -67,52 +74,65 @@ async def google_callback(request: Request):
 def home(request: Request):
     if not request.session.get("user"):
         return RedirectResponse("/login", 303)
+
     return templates.TemplateResponse(
         "home.html",
         {"request": request, "user": request.session["user"]}
     )
 
+# ================= SIGNUP =================
 @app.get("/signup")
 def signup_page(request: Request):
     return templates.TemplateResponse("signup.html", {"request": request})
 
+
 @app.post("/signup")
-def signup(request: Request,
-           name: str = Form(...),
-           email: str = Form(...),
-           password: str = Form(...)):
+def signup(
+    request: Request,
+    name: str = Form(...),
+    email: str = Form(...),
+    password: str = Form(...),
+    db: sqlite3.Connection = Depends(get_db)
+):
     password = password.encode("utf-8")[:72].decode("utf-8", errors="ignore")
     hashed = pwd_ctx.hash(password)
+    cur = db.cursor()
 
     try:
         cur.execute(
             "INSERT INTO users (name, email, password) VALUES (?, ?, ?)",
             (name, email, hashed)
         )
-        conn.commit()
+        db.commit()
     except sqlite3.IntegrityError:
         return templates.TemplateResponse(
             "signup.html",
-            {"request": request, "error": "Email or name already exists"}
+            {"request": request, "error": "Email already exists"}
         )
 
     return RedirectResponse("/login", 303)
 
+# ================= LOGIN =================
 @app.get("/login")
 def login_page(request: Request):
     return templates.TemplateResponse("login.html", {"request": request})
 
+
 @app.post("/login")
-def login(request: Request,
-          email: str = Form(...),
-          password: str = Form(...)):
+def login(
+    request: Request,
+    email: str = Form(...),
+    password: str = Form(...),
+    db: sqlite3.Connection = Depends(get_db)
+):
+    cur = db.cursor()
     cur.execute("SELECT name, password FROM users WHERE email=?", (email,))
     row = cur.fetchone()
 
     password = password.encode("utf-8")[:72].decode("utf-8", errors="ignore")
 
-    if row and pwd_ctx.verify(password, row[1]):
-        request.session["user"] = row[0]
+    if row and pwd_ctx.verify(password, row["password"]):
+        request.session["user"] = row["name"]
         return RedirectResponse("/", 303)
 
     return templates.TemplateResponse(
@@ -120,17 +140,22 @@ def login(request: Request,
         {"request": request, "error": "Invalid credentials"}
     )
 
+
 @app.get("/logout")
 def logout(request: Request):
     request.session.clear()
     return RedirectResponse("/login", 303)
 
-# ================= GALLERY =================
+
 @app.get("/gallery")
-def gallery(request: Request):
+def gallery(
+    request: Request,
+    db: sqlite3.Connection = Depends(get_db)
+):
     if not request.session.get("user"):
         return RedirectResponse("/login", 303)
 
+    cur = db.cursor()
     cur.execute("""
         SELECT filename, metadata, narrative
         FROM images
@@ -143,7 +168,7 @@ def gallery(request: Request):
     for fn, metadata_json, narrative in rows:
         try:
             meta = json.loads(metadata_json) if metadata_json else {}
-        except:
+        except json.JSONDecodeError:
             meta = {}
         images.append((fn, meta, narrative))
 
@@ -157,23 +182,27 @@ def gallery(request: Request):
         }
     )
 
-# ================= UPLOAD =================
+
 @app.post("/upload")
-def upload_image(request: Request,
-                 image: UploadFile = File(...),
-                 visibility: str = Form("private")):
+def upload_image(
+    request: Request,
+    image: UploadFile = File(...),
+    visibility: str = Form("private"),
+    db: sqlite3.Connection = Depends(get_db)
+):
     if not request.session.get("user"):
         return RedirectResponse("/login", 303)
 
     ext = os.path.splitext(image.filename)[1] or ".jpg"
     filename = f"{uuid.uuid4()}{ext}"
-    path = os.path.join(UPLOAD_DIR, filename)
+    path = (UPLOAD_DIR / filename).resolve()
 
     with open(path, "wb") as buffer:
         shutil.copyfileobj(image.file, buffer)
 
-    metadata = detect_fuzzy_emotion(path)
+    metadata = detect_fuzzy_emotion(str(path))
 
+    cur = db.cursor()
     cur.execute("""
         INSERT INTO images (user_name, filename, metadata, visibility)
         VALUES (?, ?, ?, ?)
@@ -183,24 +212,34 @@ def upload_image(request: Request,
         json.dumps(metadata),
         visibility
     ))
+    db.commit()
 
-    conn.commit()
     return RedirectResponse("/gallery", 303)
 
-# ================= DELETE =================
+
 @app.post("/delete/{filename}")
-def delete_image(request: Request, filename: str):
+def delete_image(
+    request: Request,
+    filename: str,
+    db: sqlite3.Connection = Depends(get_db)
+):
     if not request.session.get("user"):
         return RedirectResponse("/login", 303)
 
+    safe_name = Path(filename).name
+    file_path = (UPLOAD_DIR / safe_name).resolve()
+
+    if not str(file_path).startswith(str(UPLOAD_DIR)):
+        raise HTTPException(status_code=400, detail="Invalid filename")
+
+    cur = db.cursor()
     cur.execute(
         "DELETE FROM images WHERE filename=? AND user_name=?",
-        (filename, request.session["user"])
+        (safe_name, request.session["user"])
     )
-    conn.commit()
+    db.commit()
 
-    file_path = os.path.join(UPLOAD_DIR, filename)
-    if os.path.exists(file_path):
-        os.remove(file_path)
+    if file_path.exists():
+        file_path.unlink()
 
     return RedirectResponse("/gallery", 303)
