@@ -137,7 +137,10 @@ def detect_fuzzy_emotion(image_path, k=5):
         km = KMeans(n_clusters=n_clusters, random_state=0, n_init=10)
         labels = km.fit_predict(arr)
         centroids = km.cluster_centers_
-    except Exception:
+    except ValueError as e:
+        # For example, KMeans can raise ValueError for invalid n_clusters
+        # Log the error for debugging
+        print(f"KMeans clustering failed: {e}")
        
         centroids = np.array(arr[:n_clusters])
         labels = np.zeros(len(arr), dtype=int)
