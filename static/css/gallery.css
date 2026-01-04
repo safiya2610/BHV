@@ -43,7 +43,6 @@
   margin: 0 auto 60px;
 }
 
-/* CARD */
 .grid-card {
   position: relative;
   display: inline-block;
@@ -68,16 +67,7 @@
   display: block;
 }
 
-/* TEXT */
-.emotion-text {
-  margin-top: 8px;
-  text-align: center;
-  font-style: italic;
-  font-size: 0.95rem;
-  color: #555;
-}
 
-/* DELETE FORM */
 .delete-form {
   position: absolute;
   top: 8px;
@@ -85,7 +75,6 @@
   z-index: 10;
 }
 
-/* DELETE BUTTON */
 .delete-btn {
   background: rgba(0,0,0,0.6);
   border: none;
@@ -137,10 +126,6 @@
 .btn-upload span {
   display: inline-block;
   transition: transform 0.3s ease;
-}
-.profile-header{
-  text-align: center;
-  margin-bottom: 20px;
 }
 
 
