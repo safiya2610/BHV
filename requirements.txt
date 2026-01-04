@@ -1,5 +1,3 @@
-
-
 python-dotenv
 fastapi
 uvicorn
@@ -7,8 +5,14 @@ jinja2
 python-multipart
 starlette
 passlib[bcrypt]
+
 authlib
-deepface
+httpx
+
 opencv-python
 pillow
-tensorflow
+
+numpy
+scipy
+scikit-learn
+scikit-image
