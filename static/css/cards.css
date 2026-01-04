@@ -1,26 +1,26 @@
 html, body {
   margin: 0;
   padding: 0;
-  background: #ffffff; /* ✅ pure white */
+  background: #ffffff; 
 }
 
-/* SECTION */
+
 .cards-section {
   background: #ffffff;
 }
 
-/* WRAPPER */
+
 .wrapper {
   max-width: 600px;
   margin: 0 auto;
-  padding-bottom: 120px; /* space to scroll */
+  padding-bottom: 120px; 
 }
 
-/* CARD */
+
 .card {
   position: sticky;
-  top: 80px;                 /* navbar ke neeche */
-  height: calc(100vh - 120px); /* 🔑 ONE IMAGE = ONE PAGE */
+  top: 80px;                 
+  height: calc(100vh - 120px); 
 
   border-radius: 14px;
   overflow: hidden;
@@ -37,7 +37,7 @@ html, body {
   display: block;
 }
 
-/* LEFT–RIGHT STACK FEEL (subtle) */
+
 .card:nth-child(odd) {
   transform: translateX(0px);
 }
@@ -46,7 +46,7 @@ html, body {
   transform: translateX(0px);
 }
 
-/* MOBILE FIX */
+
 @media (max-width: 768px) {
   .card {
     transform: none !important;
