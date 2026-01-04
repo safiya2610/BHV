@@ -4,6 +4,7 @@ from fastapi.templating import Jinja2Templates
 from starlette.middleware.sessions import SessionMiddleware
 from passlib.context import CryptContext
 from fastapi.staticfiles import StaticFiles
+import sqlite3
 
 import os
 import uuid
