@@ -4,7 +4,7 @@
 <link rel="stylesheet" href="/static/css/gallery.css">
 
 <style>
-/* ===== PROFILE HEADER ===== */
+
 .profile-header{
   display:flex;
   justify-content:space-between;
@@ -22,12 +22,11 @@
   color:#777;
 }
 
-/* ===== GRID CARD FIX ===== */
 .grid-card{
   padding:10px;
 }
 
-/* ===== METADATA POPUP ===== */
+
 .meta-overlay{
   position:fixed;
   inset:0;
@@ -57,7 +56,6 @@
   cursor:pointer;
 }
 
-/* ===== NARRATIVE ===== */
 .narrative-box{
   width:100%;
   box-sizing:border-box;
@@ -84,7 +82,7 @@
 
 {% block content %}
 
-<!-- ===== PROFILE HEADER ===== -->
+
 <div class="profile-header">
   <div>
     <h3>{{ profile_user }}</h3>
@@ -92,7 +90,6 @@
   </div>
 </div>
 
-<!-- ===== UPLOAD (ONLY FOR SELF) ===== -->
 {% if profile_user == current_user %}
 <form class="upload-form" action="/upload" method="post" enctype="multipart/form-data">
   <input type="file" name="image" required>
@@ -107,7 +104,7 @@
 <hr>
 {% endif %}
 
-<!-- ===== GALLERY GRID ===== -->
+
 <div class="grid-container">
 
 {% for img in images %}
@@ -121,7 +118,6 @@
     </button>
     {% endif %}
 
-    <!-- ===== NARRATIVE ===== -->
     {% if profile_user == current_user %}
     <form method="post" action="/update-narrative">
       <input type="hidden" name="filename" value="{{ img[0] }}">
@@ -142,7 +138,6 @@
       {% endif %}
     {% endif %}
 
-    <!-- ===== DELETE ===== -->
     {% if profile_user == current_user %}
     <form method="post" action="/delete/{{ img[0] }}" class="delete-form">
       <button class="delete-btn">&times;</button>
@@ -150,7 +145,7 @@
     {% endif %}
   </div>
 
-  <!-- ===== METADATA POPUP ===== -->
+
   {% if img[1] %}
   <div id="meta-{{ img[0] }}" class="meta-overlay">
     <div class="meta-card">
@@ -167,7 +162,7 @@
 
 </div>
 
-<!-- ===== JS ===== -->
+
 <script>
 function openMeta(id){
   document.getElementById("meta-"+id).style.display="flex";
