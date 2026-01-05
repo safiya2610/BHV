@@ -16,8 +16,7 @@ from sklearn.cluster import KMeans
 from skimage import color as skcolor
 import colorsys
 
-# load cleaned_data.json (the user-provided color->emotion map)
-# expects file 'cleaned_data.json' next to this module
+
 try:
     with open("cleaned_data.json", "r", encoding="utf-8") as f:
         CLEANED = json.load(f)
@@ -31,8 +30,7 @@ for c in CLEANED.get("colors", []):
         continue
     COLOR_TO_EMOTIONS[name] = [emo.strip().lower() for emo in c.get("emotion", []) if emo]
 
-# A pragmatic reference color palette (approximate RGB 0-255).
-# Add/extend this with names you have in cleaned_data.json.
+
 REFERENCE_RGB = {
     "red": (220, 20, 60),
     "blue": (30, 144, 255),

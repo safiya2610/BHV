@@ -18,7 +18,7 @@ from fuzzy_emotion import detect_fuzzy_emotion
 from config import SECRET_KEY, GOOGLE_REDIRECT_URI
 from auth_google import oauth
 
-# ================= APP INIT =================
+
 app = FastAPI()
 init_db()
 
@@ -32,7 +32,7 @@ pwd_ctx = CryptContext(schemes=["bcrypt"], deprecated="auto")
 UPLOAD_DIR = Path("static/uploads").resolve()
 UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 
-# ================= GOOGLE OAUTH =================
+
 @app.get("/login/google")
 async def login_google(request: Request):
     return await oauth.google.authorize_redirect(
@@ -80,7 +80,7 @@ def home(request: Request):
         {"request": request, "user": request.session["user"]}
     )
 
-# ================= SIGNUP =================
+
 @app.get("/signup")
 def signup_page(request: Request):
     return templates.TemplateResponse("signup.html", {"request": request})
@@ -112,7 +112,7 @@ def signup(
 
     return RedirectResponse("/login", 303)
 
-# ================= LOGIN =================
+
 @app.get("/login")
 def login_page(request: Request):
     return templates.TemplateResponse("login.html", {"request": request})
