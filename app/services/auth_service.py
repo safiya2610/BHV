@@ -32,8 +32,7 @@ async def google_callback_handler(request: Request, db):
     if not exists:
         cur.execute(
             "INSERT INTO users (name, email, password) VALUES (?, ?, ?)",
-            (name, email, "")
-        )
+            (name, email, None)
         db.commit()
 
     request.session["user"] = name
