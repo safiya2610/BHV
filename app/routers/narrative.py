@@ -6,6 +6,7 @@ from db import get_db
 
 router = APIRouter()
 
+
 @router.post("/update-narrative")
 def update_narrative(
     request: Request,
@@ -25,6 +26,6 @@ def update_narrative(
         """,
         (narrative.strip(), filename, request.session["user"])
     )
-
     db.commit()
+
     return RedirectResponse("/gallery", 303)

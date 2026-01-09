@@ -1,10 +1,3 @@
-# fuzzy_emotion.py
-"""
-Detect fuzzy "emotion" metadata from an image.
-Outputs a metadata dict suitable for storing in DB (JSON-serializable).
-Requires: pillow, numpy, scikit-learn, scikit-image
-"""
-
 import json
 import math
 import datetime
@@ -21,8 +14,8 @@ try:
     with open("cleaned_data.json", "r", encoding="utf-8") as f:
         CLEANED = json.load(f)
 except Exception as e:
-    CLEANED = {"colors": []}  # fallback
-# build map name -> list of emotions (lowercase)
+    CLEANED = {"colors": []}  
+
 COLOR_TO_EMOTIONS = {}
 for c in CLEANED.get("colors", []):
     name = (c.get("name") or "").strip().lower()
@@ -56,7 +49,7 @@ REFERENCE_RGB = {
     "silver": (192, 192, 192),
     "unknown": (200, 200, 200)
 }
-# Precompute Lab for reference colors
+
 def rgb255_to_lab(rgb):
     arr = np.array([[list(rgb)]], dtype=np.uint8) / 255.0
     lab = skcolor.rgb2lab(arr)[0][0]
@@ -85,7 +78,7 @@ def _image_visual_stats(img):
     """Return avg_brightness (0..1), avg_saturation (0..1), contrast (0..1)."""
    
     small = img.copy().convert("RGB").resize((200, 200))
-    arr = np.array(small) / 255.0  # HxWx3
+    arr = np.array(small) / 255.0  
    
     hsv = np.apply_along_axis(lambda rgb: colorsys.rgb_to_hsv(*rgb), 2, arr)
     sats = hsv[..., 1]
@@ -99,19 +92,7 @@ def _image_visual_stats(img):
 
 
 def detect_fuzzy_emotion(image_path, k=5):
-    """
-    Main function to call from main.py.
-    Returns metadata dict:
-    {
-        "palette": [{"color": "yellow", "weight": 0.34}, ...],
-        "emotion_space": {"happiness": 0.34, ...},
-        "emotion_groups": {"positive": 0.5, "neutral": 0.3, "negative": 0.2},
-        "visual_stats": {...},
-        "confidence": 0.34,
-        "generated_at": "2026-01-03T12:00:00",
-        "algorithm": "fuzzy-color-v1"
-    }
-    """
+  
     img = Image.open(image_path).convert("RGB")
     w, h = img.size
    
@@ -136,8 +117,7 @@ def detect_fuzzy_emotion(image_path, k=5):
         labels = km.fit_predict(arr)
         centroids = km.cluster_centers_
     except ValueError as e:
-        # For example, KMeans can raise ValueError for invalid n_clusters
-        # Log the error for debugging
+       
         print(f"KMeans clustering failed: {e}")
        
         centroids = np.array(arr[:n_clusters])
@@ -169,7 +149,7 @@ def detect_fuzzy_emotion(image_path, k=5):
         for k_ in list(emotion_scores.keys()):
             emotion_scores[k_] = float(emotion_scores[k_] / total)
     else:
-        # nothing mapped -> empty dict
+        
         emotion_scores = {}
 
    
@@ -185,10 +165,10 @@ def detect_fuzzy_emotion(image_path, k=5):
         else:
             group_scores["neutral"] += score
 
-    # visual stats
+    
     visual_stats = _image_visual_stats(img)
 
-    # confidence - how clear the palette is. Use dominant color weight
+    
     confidence = max([p["weight"] for p in palette]) if palette else 0.0
 
     metadata = {

@@ -9,33 +9,37 @@
 <div class="login-page">
 
   <div class="login-left">
-     <img src="/static/images/BHV_logo.png" class="login-logo" alt="BHV Logo">
+    <img src="/static/images/BHV_logo.png" class="login-logo" alt="BHV Logo">
+
     <div class="login-card">
       <h2>Welcome to BHV</h2>
 
-   <a href="/login/google" class="btn-google">
-  <img src="/static/images/Google.jpg" alt="Google" class="google-icon">
-  <span>Continue with Google</span>
-</a>
-
+      <a href="/login/google" class="btn-google" aria-label="Login with Google">
+        <img src="/static/images/Google.jpg" alt="Google" class="google-icon">
+        <span>Continue with Google</span>
+      </a>
 
       <div class="divider">or</div>
 
-      <form method="post">
-        <input name="email" type="email" placeholder="Email" required>
-        <input name="password" type="password" placeholder="Password" required>
+      {% if error %}
+        <p class="error-text">{{ error }}</p>
+      {% endif %}
+
+      <form method="post" action="/login">
+        <input name="email" type="email" placeholder="Email" required autocomplete="email">
+        <input name="password" type="password" placeholder="Password" required autocomplete="current-password">
 
         <button type="submit" class="btn-primary">Continue</button>
       </form>
 
       <p class="auth-footer">
-        Don’t have an account? <a  href="/signup">Signup</a>
+        Don’t have an account? <a href="/signup">Signup</a>
       </p>
     </div>
   </div>
 
   <div class="login-right">
-     <img src="/static/images/home-img.png" alt="Home Image" class="login-image" style="height: 700px;">
+    <img src="/static/images/home-img.png" alt="Home Image" class="login-image" style="height: 700px;">
   </div>
 
 </div>
