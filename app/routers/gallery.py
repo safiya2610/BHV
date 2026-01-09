@@ -1,7 +1,8 @@
 from fastapi import APIRouter, Request, UploadFile, File, Form, Depends
 from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
-import sqlite3, json
+import sqlite3
+import json
 
 from db import get_db
 from app.services.image_service import save_image, delete_image
