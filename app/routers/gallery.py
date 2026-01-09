@@ -14,7 +14,7 @@ templates = Jinja2Templates(directory="templates")
 def require_user(request: Request) -> str:
     user = request.session.get("user")
     if not user:
-        raise RedirectResponse("/login", 303)
+        return RedirectResponse("/login", 303)
     return user
 
 
