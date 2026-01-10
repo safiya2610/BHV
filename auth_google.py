@@ -3,6 +3,10 @@ from config import GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET
 
 oauth = OAuth()
 
+# Fail fast with clear message if config is missing
+if not GOOGLE_CLIENT_ID or not GOOGLE_CLIENT_SECRET:
+    raise RuntimeError("Missing GOOGLE_CLIENT_ID/GOOGLE_CLIENT_SECRET configuration")
+
 oauth.register(
     name="google",
     client_id=GOOGLE_CLIENT_ID,

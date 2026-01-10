@@ -22,3 +22,9 @@ def login_page(request: Request):
 @router.get("/signup")
 def signup_page(request: Request):
     return templates.TemplateResponse("signup.html", {"request": request})
+
+
+@router.get("/logout")
+def logout(request: Request):
+    request.session.clear()
+    return RedirectResponse("/login", status_code=303)
