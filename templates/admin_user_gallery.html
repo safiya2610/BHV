@@ -4,8 +4,7 @@
 <link rel="stylesheet" href="/static/css/gallery.css">
 
 <style>
-
-.profile-header{
+.admin-header{
   display:flex;
   justify-content:space-between;
   align-items:center;
@@ -13,36 +12,21 @@
   margin-bottom:16px;
   border-bottom:1px solid #e6e6e6;
 }
-.profile-header h3{
+
+.admin-header h3{
   margin:0;
   font-size:22px;
 }
-.profile-meta{
-  font-size:13px;
-  color:#777;
+
+.admin-badge{
+  background:#c2185b;
+  color:#fff;
+  padding:4px 10px;
+  border-radius:6px;
+  font-size:12px;
 }
 
-/* ===== GRID ===== */
-.grid-container{
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(240px,1fr));
-  gap:16px;
-}
-
-.grid-card{
-  background:#fff;
-  padding:10px;
-  border-radius:10px;
-  box-shadow:0 4px 12px rgba(0,0,0,.12);
-  position:relative;
-}
-
-.grid-thumb{
-  width:100%;
-  border-radius:8px;
-}
-
-/* ===== VIEW METADATA BUTTON ===== */
+/* reuse gallery styles */
 .view-btn{
   margin-top:8px;
   background:#efefef;
@@ -52,11 +36,8 @@
   cursor:pointer;
   font-size:13px;
 }
-.view-btn:hover{
-  background:#ddd;
-}
+.view-btn:hover{ background:#ddd; }
 
-/* ===== POPUP OVERLAY ===== */
 .meta-overlay{
   position:fixed;
   inset:0;
@@ -67,7 +48,6 @@
   z-index:9999;
 }
 
-/* ===== POPUP CARD ===== */
 .meta-card{
   background:#fff;
   width:90%;
@@ -79,7 +59,6 @@
   position:relative;
 }
 
-/* ===== CLOSE BUTTON ===== */
 .meta-close{
   position:absolute;
   top:10px;
@@ -89,112 +68,71 @@
   background:none;
   cursor:pointer;
 }
-
-/* ===== NARRATIVE ===== */
-.narrative-box{
-  width:100%;
-  margin-top:6px;
-  padding:6px 8px;
-  font-size:13px;
-  border-radius:6px;
-  border:1px solid #ddd;
-  resize:none;
-}
-
-/* ===== DELETE ===== */
-.delete-form{
-  position:absolute;
-  top:8px;
-  right:8px;
-}
-.delete-btn{
-  background:#ff4d4d;
-  color:white;
-  border:none;
-  width:26px;
-  height:26px;
-  border-radius:50%;
-  cursor:pointer;
-}
 </style>
 {% endblock %}
 
 {% block content %}
 
-
-<div class="profile-header">
+<div class="admin-header">
   <div>
-    <h3>{{ current_user }}</h3>
+    <h3>User Gallery: {{ profile_user }}</h3>
     <p class="profile-meta">{{ images|length }} posts</p>
   </div>
+  <span class="admin-badge">ADMIN VIEW</span>
 </div>
-
-
-<form class="upload-form" action="/upload" method="post" enctype="multipart/form-data">
-  <input type="file" name="image" required>
-
-  <select name="visibility">
-    <option value="private">Private</option>
-    <option value="public">Public</option>
-  </select>
-
-  <button class="btn-upload">Upload</button>
-</form>
-
-<hr>
-
 
 <div class="grid-container">
 
 {% for img in images %}
   <div class="grid-card">
 
-   
     <img src="/static/uploads/{{ img[0] }}" class="grid-thumb">
 
-   
-    {% if img[1] is not none %}
+    {% if img[1] %}
     <button class="view-btn" onclick="openMeta('{{ img[0] }}')">
       View MetaData
     </button>
     {% endif %}
 
-   
-    <form method="post" action="/update-narrative">
+    <form method="post" action="/admin/update-narrative">
       <input type="hidden" name="filename" value="{{ img[0] }}">
+      <input type="hidden" name="user_email" value="{{ profile_user }}">
       <textarea
         name="narrative"
         rows="2"
         class="narrative-box"
-        placeholder="Write a note..."
+        placeholder="Edit user narrative..."
         onblur="this.form.submit()"
       >{{ img[2] if img[2] else '' }}</textarea>
     </form>
 
-    
-    <form method="post" action="/delete/{{ img[0] }}" class="delete-form">
+    <form method="post" action="/admin/delete-image" class="delete-form">
+      <input type="hidden" name="filename" value="{{ img[0] }}">
+      <input type="hidden" name="user_email" value="{{ profile_user }}">
       <button class="delete-btn">&times;</button>
     </form>
 
   </div>
 
-  {% if img[1] is not none %}
+  {% if img[1] %}
   <div id="meta-{{ img[0] }}" class="meta-overlay">
     <div class="meta-card">
       <button class="meta-close" onclick="closeMeta('{{ img[0] }}')">✕</button>
       <h3>Image MetaData</h3>
-
-      <pre>{{ img[1] | tojson(indent=2) }}</pre>
+      <ul>
+        {% for key, value in img[1].items() %}
+        <li><strong>{{ key }}:</strong> {{ value }}</li>
+        {% endfor %}
+      </ul>
     </div>
   </div>
   {% endif %}
 
 {% else %}
-  <p style="text-align:center;color:#777;">No posts yet</p>
+  <p style="text-align:center;color:#777;margin-top:20px;">No posts</p>
 {% endfor %}
 
 </div>
-
 
 <script>
 function openMeta(id){

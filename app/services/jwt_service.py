@@ -18,8 +18,11 @@ def create_refresh_token(sub: str):
     }
     return jwt.encode(payload, SECRET_KEY, algorithm=JWT_ALGORITHM)
 
-def decode_token(token: str):
+def decode_token(token: str, token_type: str = None):
     try:
-        return jwt.decode(token, SECRET_KEY, algorithms=[JWT_ALGORITHM])
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[JWT_ALGORITHM])
+        if token_type and payload.get("type") != token_type:
+            return None
+        return payload
     except JWTError:
         return None

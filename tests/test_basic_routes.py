@@ -34,3 +34,6 @@ def test_update_narrative_requires_auth(client):
         follow_redirects=False
     )
     assert res.status_code in (302, 303)
+
+
+#my code

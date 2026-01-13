@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+
+{% block head %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+.admin-container{
+  max-width:1200px;
+  margin:0 auto;
+  padding:20px;
+}
+
+
+.admin-header{
+  background:linear-gradient(135deg,#4f46e5,#7c3aed);
+  color:#fff;
+  padding:22px;
+  border-radius:12px;
+  margin-bottom:25px;
+  box-shadow:0 6px 20px rgba(79,70,229,.25);
+}
+
+.admin-header h2{
+  margin:0;
+  font-size:28px;
+}
+
+/* ===== TABLE CARD ===== */
+.table-card{
+  background:#fff;
+  border-radius:12px;
+  overflow:hidden;
+  box-shadow:0 4px 12px rgba(0,0,0,.08);
+}
+
+/* ===== TABLE ===== */
+table{
+  width:100%;
+  border-collapse:collapse;
+}
+
+thead{
+  background:linear-gradient(90deg,#4f46e5,#7c3aed);
+  color:white;
+}
+
+th, td{
+  padding:16px 18px;
+  text-align:left;
+}
+
+th{
+  font-weight:600;
+}
+
+tbody tr{
+  border-bottom:1px solid #f1f5f9;
+  transition:.2s;
+}
+
+tbody tr:hover{
+  background:#f8fafc;
+}
+
+
+.view-btn{
+  background:#10b981;
+  color:white;
+  border:none;
+  padding:8px 14px;
+  border-radius:8px;
+  cursor:pointer;
+  font-size:14px;
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+}
+
+.view-btn:hover{
+  background:#0da271;
+}
+
+
+.empty{
+  padding:40px;
+  text-align:center;
+  color:#94a3b8;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="admin-container">
+
+
+  <div class="admin-header">
+    <h2><i class="fas fa-user-shield"></i> Admin Dashboard</h2>
+    <p>Manage users and view their galleries</p>
+  </div>
+
+ 
+  <div class="table-card">
+    <table>
+      <thead>
+        <tr>
+          <th>User Name</th>
+          <th>Email</th>
+          <th style="text-align:center;">Action</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {% for u in users %}
+        <tr>
+          <td>{{ u.name }}</td>
+          <td>{{ u.email }}</td>
+          <td style="text-align:center;">
+            <a href="/admin/view-gallery/{{ u.email | urlencode }}" target="_blank">
+              <button class="view-btn">
+                <i class="fas fa-images"></i> View Gallery
+              </button>
+            </a>
+          </td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="3" class="empty">
+            <i class="fas fa-users-slash"></i><br>
+            No users found
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+</div>
+
+{% endblock %}

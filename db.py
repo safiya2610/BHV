@@ -1,20 +1,16 @@
 import sqlite3
-from contextlib import contextmanager
+import os
 
-DB_NAME = "users.db"
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DB_PATH = os.path.join(BASE_DIR, "users.db")
 
 
 def get_db():
-    """
-    FastAPI dependency.
-    Provides a SQLite connection per request and closes it safely.
-    """
     db = sqlite3.connect(
-        DB_NAME,
-        check_same_thread=False,
+        DB_PATH,
+        check_same_thread=False
     )
     db.row_factory = sqlite3.Row
-
     try:
         yield db
     finally:
@@ -22,19 +18,16 @@ def get_db():
 
 
 def init_db():
-    """
-    Initialize database tables.
-    Safe to call multiple times.
-    """
-    db = sqlite3.connect(DB_NAME)
-    # Enforce foreign keys for future constraints
+    db = sqlite3.connect(DB_PATH)
     db.execute("PRAGMA foreign_keys = ON;")
     cur = db.cursor()
 
-    # Detect and migrate if 'users.name' has an unintended UNIQUE constraint in existing DBs
-    row = cur.execute("SELECT sql FROM sqlite_master WHERE type='table' AND name='users'").fetchone()
+    # ===== USERS TABLE (with migration safety) =====
+    row = cur.execute(
+        "SELECT sql FROM sqlite_master WHERE type='table' AND name='users'"
+    ).fetchone()
+
     if row and row[0] and "name TEXT UNIQUE" in row[0]:
-        # Rebuild users table without UNIQUE on name, preserving data
         cur.executescript(
             """
             PRAGMA foreign_keys=off;
@@ -53,9 +46,6 @@ def init_db():
             """
         )
 
-    # -------------------------
-    # USERS TABLE
-    # -------------------------
     cur.execute(
         """
         CREATE TABLE IF NOT EXISTS users (
@@ -68,12 +58,11 @@ def init_db():
         """
     )
 
-    # Add helpful indexes
-    cur.execute("CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);")
+    cur.execute(
+        "CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);"
+    )
 
-    # -------------------------
-    # IMAGES TABLE
-    # -------------------------
+    # ===== IMAGES TABLE =====
     cur.execute(
         """
         CREATE TABLE IF NOT EXISTS images (
@@ -91,16 +80,12 @@ def init_db():
         "CREATE INDEX IF NOT EXISTS idx_images_user_name ON images(user_name);"
     )
 
-    # -------------------------
-    # FRIENDS TABLE
-    # -------------------------
+    # ===== ADMINS TABLE =====
     cur.execute(
         """
-        CREATE TABLE IF NOT EXISTS friends (
+        CREATE TABLE IF NOT EXISTS admins (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            sender TEXT NOT NULL,
-            receiver TEXT NOT NULL,
-            status TEXT DEFAULT 'pending'
+            email TEXT UNIQUE NOT NULL
         )
         """
     )

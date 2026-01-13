@@ -1,58 +1,77 @@
-from fastapi.responses import RedirectResponse
-from auth_google import oauth
-from config import GOOGLE_REDIRECT_URI
 import logging
 import sqlite3
+from fastapi import Request
+
+from config import GOOGLE_REDIRECT_URI
+from auth_google import oauth
 
 logger = logging.getLogger("bhv.auth")
 
 
-async def google_login_redirect(request):
-    # Authlib manages anti-CSRF state via the session under the hood
+async def google_login_redirect(request: Request):
+    """
+    Redirects user to Google OAuth consent screen
+    """
     return await oauth.google.authorize_redirect(
         request,
         GOOGLE_REDIRECT_URI,
     )
 
 
-async def google_callback_handler(request, db):
+async def google_callback_handler(request: Request, db):
+    """
+    Handles Google OAuth callback:
+    - exchanges code for token
+    - fetches user info
+    - inserts user into DB if new
+    - returns pure user data (NO redirect, NO session)
+    """
+
     try:
         token = await oauth.google.authorize_access_token(request)
     except Exception as exc:
         logger.exception("Google authorize_access_token failed: %s", exc)
-        return RedirectResponse("/login?error=oauth_exchange_failed", status_code=303)
+        return None
 
     userinfo = token.get("userinfo")
     if not userinfo or "email" not in userinfo:
-        return RedirectResponse("/login?error=missing_userinfo", status_code=303)
+        logger.error("Missing userinfo or email in Google response")
+        return None
 
-    # Optionally enforce email verification when available
+    
     if userinfo.get("email_verified") is False:
-        return RedirectResponse("/login?error=email_not_verified", status_code=303)
+        logger.warning("Unverified Google email blocked")
+        return None
 
     email = userinfo["email"].strip().lower()
     name = (userinfo.get("name") or email.split("@")[0]).strip()
 
     cur = db.cursor()
+
     try:
+        # Check if user already exists
         cur.execute("SELECT email FROM users WHERE email=?", (email,))
-        if not cur.fetchone():
-            # Insert NULL for password for OAuth users
+        exists = cur.fetchone()
+
+        if not exists:
+            # OAuth users have NULL password
             cur.execute(
                 "INSERT INTO users (name, email, password) VALUES (?, ?, ?)",
                 (name, email, None),
             )
             db.commit()
+
     except sqlite3.IntegrityError:
-        # Race condition: user might have been created concurrently
+        # Race condition safety
         db.rollback()
-    except Exception:
+
+    except Exception as exc:
         db.rollback()
-        logger.exception("Failed to upsert user during Google callback")
-        return RedirectResponse("/login?error=server_error", status_code=303)
+        logger.exception("Failed to upsert user during Google callback: %s", exc)
+        return None
 
-    # Mark session as authenticated by email principal
-    request.session["user"] = email
-
-    
-    return RedirectResponse("/", status_code=303)
+    # ✅ RETURN PURE DATA ONLY
+    return {
+        "name": name,
+        "email": email
+    }
