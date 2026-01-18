@@ -32,6 +32,10 @@ app.include_router(gallery_router)
 app.include_router(narrative_router)
 app.include_router(admin_router)
 
+@app.get("/health")
+async def health_check():
+    return {"status": "healthy"}
+
 @app.on_event("startup")
 async def on_startup():
     logger.info("Starting BHV Platform application")

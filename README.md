@@ -1,19 +1,63 @@
-# BHV: Behavioral Health Vault
+# BHV Platform
 
-The goal of this project is to provide a digitization approach to record the journey of recovery of people with serious mental illnesses and other social determinants. BHV (pronounced Beehive or Behave) aims to complement traditional Electronic Health Records (EHRs) by storing patient-provided images (photographs and scanned drawings) along with associated textual narratives, which may be provided by the patient or recorded by a social worker during an interview.
+A FastAPI-based web application for image gallery and narrative management.
 
-BHV is a minimal, Python-based application that enables healthcare networks to store and retrieve patient-provided images.
+## Features
 
-It provides them access to upload, view, and edit their own images and narratives.
+- User authentication with Google OAuth
+- Image upload and gallery management
+- Admin dashboard
+- Fuzzy emotion analysis
+- Secure API with JWT tokens
 
-It also provides admin-level access for system administrators to view the entire ecosystem, upload images on behalf of users, along with the narrative, edit images on behalf of users, and delete images or narrations on behalf of users or as a moderation action.
+## Local Development
 
-The system should be secure. But the signup process should be pretty straightforward. Email-based signups are ok. 
+1. Clone the repository
+2. Create a virtual environment: `python -m venv venv`
+3. Activate the environment: `venv\Scripts\activate` (Windows) or `source venv/bin/activate` (Unix)
+4. Install dependencies: `pip install -r requirements/base.in`
+5. Copy `.env.example` to `.env` and fill in your secrets
+6. Run the application: `python main.py`
 
-Log-ins should be straightforward. A simple username and password should be sufficient.
+## Docker Support
 
-The system should avoid unnecessary bloat to enable easy installation in healthcare networks.
+### Prerequisites
 
-The front-end should be kept minimal to allow the entire system to be run from a single command (rather than expecting the front-end, backend, and database to be run separately).
+- Docker and Docker Compose installed
 
-The storage of the images could be in a file system with an index to retrieve them easily. The index itself could be in a database to allow easy queries.
+### Quick Start
+
+1. Copy `.env.example` to `.env` and fill in your secrets
+2. Build and run with Docker Compose:
+   ```bash
+   docker-compose up --build
+   ```
+3. Access the application at http://localhost:8000
+
+### Docker Commands
+
+- Build the image: `docker build -t bhv-app .`
+- Run the container: `docker run -p 8000:8000 --env-file .env bhv-app`
+- Stop containers: `docker-compose down`
+- View logs: `docker-compose logs`
+
+### Security Features
+
+- Non-root user in container
+- Multi-stage build for minimal image size
+- Environment variables for secrets management
+- Health checks for container monitoring
+
+### Volumes
+
+- `users.db`: SQLite database persistence
+- `static/uploads`: User uploaded images
+- `cleaned_data.json`: Processed data file
+
+## Testing
+
+Run tests with: `pytest`
+
+## License
+
+See LICENSE file for details.

@@ -37,7 +37,6 @@ def update_narrative(
     )
     db.commit()
 
-    # Keep the view_user set for the gallery to show the correct images
     if is_admin(request, db):
         request.session["view_user"] = user_email
 
