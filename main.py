@@ -12,6 +12,7 @@ from app.routers.gallery import router as gallery_router
 from app.routers.pages import router as pages_router
 from app.routers.narrative import router as narrative_router
 from app.routers.admin import router as admin_router
+from app.routers.export import router as export_router
 
 logger = logging.getLogger("bhv")
 logger.setLevel(logging.INFO)
@@ -31,6 +32,7 @@ app.include_router(auth_router)
 app.include_router(gallery_router)
 app.include_router(narrative_router)
 app.include_router(admin_router)
+app.include_router(export_router)
 
 @app.get("/health")
 async def health_check():

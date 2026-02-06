@@ -124,6 +124,129 @@ def admin_update_narrative(
     return RedirectResponse(f"/admin/user/{user_id}", status_code=303)
 
 
+def generate_admin_users_csv(db) -> str:
+    """Generate CSV of all users for admin."""
+    cur = db.cursor()
+    cur.execute(
+        """
+        SELECT u.name, u.email, CASE WHEN a.email IS NOT NULL THEN 'Yes' ELSE 'No' END as is_admin,
+               COUNT(i.id) as total_images, COALESCE(SUM(i.file_size), 0) / 1024 as storage_mb,
+               MIN(i.upload_date) as join_date
+        FROM users u
+        LEFT JOIN admins a ON u.email = a.email
+        LEFT JOIN images i ON u.email = i.user_name
+        GROUP BY u.id, u.name, u.email, a.email
+        ORDER BY u.name
+        """
+    )
+
+    output = io.StringIO()
+    writer = csv.writer(output)
+    writer.writerow(['Username', 'Email', 'Admin Status', 'Total Images', 'Storage (MB)', 'Join Date'])
+
+    for row in cur.fetchall():
+        name, email, is_admin, total_images, storage_mb, join_date = row
+        # Format join date
+        try:
+            if join_date:
+                dt = datetime.fromisoformat(join_date)
+                formatted_join = dt.strftime('%Y-%m-%d')
+            else:
+                formatted_join = "N/A"
+        except:
+            formatted_join = join_date or "N/A"
+
+        writer.writerow([name or "N/A", email, is_admin, total_images, f"{storage_mb:.2f}", formatted_join])
+
+    return output.getvalue()
+
+
+def generate_admin_images_csv(db) -> str:
+    """Generate CSV of all images for admin."""
+    cur = db.cursor()
+    cur.execute(
+        """
+        SELECT i.filename, i.user_name, i.narrative, i.visibility, i.upload_date, i.file_size,
+               i.metadata
+        FROM images i
+        ORDER BY i.upload_date DESC
+        """
+    )
+
+    output = io.StringIO()
+    writer = csv.writer(output)
+    writer.writerow(['Title', 'Owner', 'Filename', 'File Size (KB)', 'Upload Date', 'Visibility', 'Narrative'])
+
+    for row in cur.fetchall():
+        filename, user_name, narrative, visibility, upload_date, file_size, metadata = row
+
+        # Parse metadata for title
+        title = filename
+        if metadata:
+            try:
+                meta_dict = json.loads(metadata)
+                title = meta_dict.get('title', filename)
+            except:
+                pass
+
+        # Format date
+        try:
+            dt = datetime.fromisoformat(upload_date)
+            formatted_date = dt.strftime('%Y-%m-%d %H:%M:%S')
+        except:
+            formatted_date = upload_date or "Unknown"
+
+        writer.writerow([
+            title,
+            user_name,
+            filename,
+            f"{file_size:.2f}" if file_size else "0.00",
+            formatted_date,
+            visibility,
+            narrative or ""
+        ])
+
+    return output.getvalue()
+
+
+@router.get("/admin/export/users")
+def admin_export_users(request: Request, db=Depends(get_db)):
+    """Export all users data as CSV (admin only)."""
+    if not request.session.get("is_admin"):
+        return RedirectResponse("/", status_code=303)
+
+    csv_data = generate_admin_users_csv(db)
+    filename = f"bhv_users_export_{datetime.now().strftime('%Y%m%d')}.csv"
+
+    def iter_csv():
+        yield csv_data
+
+    return StreamingResponse(
+        iter_csv(),
+        media_type="text/csv",
+        headers={"Content-Disposition": f"attachment; filename={filename}"}
+    )
+
+
+@router.get("/admin/export/images")
+def admin_export_images(request: Request, db=Depends(get_db)):
+    """Export all images data as CSV (admin only)."""
+    if not request.session.get("is_admin"):
+        return RedirectResponse("/", status_code=303)
+
+    csv_data = generate_admin_images_csv(db)
+    filename = f"bhv_images_export_{datetime.now().strftime('%Y%m%d')}.csv"
+
+    def iter_csv():
+        yield csv_data
+
+    return StreamingResponse(
+        iter_csv(),
+        media_type="text/csv",
+        headers={"Content-Disposition": f"attachment; filename={filename}"}
+    )
+
+
 
 
 

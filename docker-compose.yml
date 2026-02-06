@@ -1,16 +1,19 @@
 services:
   bhv-app:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: bhv-app
     ports:
       - "8000:8000"
     environment:
-      - SECRET_KEY=${SECRET_KEY}
+      - SECRET_KEY=${SECRET_KEY:-your-secret-key-here}
       - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
       - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
       - GOOGLE_REDIRECT_URI=${GOOGLE_REDIRECT_URI}
     volumes:
-      - ./users.db:/app/users.db
       - ./static/uploads:/app/static/uploads
+      - ./users.db:/app/users.db
       - ./cleaned_data.json:/app/cleaned_data.json
     restart: unless-stopped
     healthcheck:

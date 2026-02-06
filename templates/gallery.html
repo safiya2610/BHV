@@ -2,131 +2,45 @@
 
 {% block head %}
 <link rel="stylesheet" href="/static/css/gallery.css">
-
-<style>
-
-.profile-header{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:14px 18px;
-  margin-bottom:16px;
-  border-bottom:1px solid #e6e6e6;
-}
-.profile-header h3{
-  margin:0;
-  font-size:22px;
-}
-.profile-meta{
-  font-size:13px;
-  color:#777;
-}
-
-/* ===== GRID ===== */
-.grid-container{
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(240px,1fr));
-  gap:16px;
-}
-
-.grid-card{
-  background:#fff;
-  padding:10px;
-  border-radius:10px;
-  box-shadow:0 4px 12px rgba(0,0,0,.12);
-  position:relative;
-}
-
-.grid-thumb{
-  width:100%;
-  border-radius:8px;
-}
-
-/* ===== VIEW METADATA BUTTON ===== */
-.view-btn{
-  margin-top:8px;
-  background:#efefef;
-  border:none;
-  padding:7px 12px;
-  border-radius:8px;
-  cursor:pointer;
-  font-size:13px;
-}
-.view-btn:hover{
-  background:#ddd;
-}
-
-/* ===== POPUP OVERLAY ===== */
-.meta-overlay{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.55);
-  display:none;
-  justify-content:center;
-  align-items:center;
-  z-index:9999;
-}
-
-/* ===== POPUP CARD ===== */
-.meta-card{
-  background:#fff;
-  width:90%;
-  max-width:520px;
-  max-height:80vh;
-  overflow:auto;
-  border-radius:12px;
-  padding:16px 18px;
-  position:relative;
-}
-
-/* ===== CLOSE BUTTON ===== */
-.meta-close{
-  position:absolute;
-  top:10px;
-  right:14px;
-  font-size:22px;
-  border:none;
-  background:none;
-  cursor:pointer;
-}
-
-/* ===== NARRATIVE ===== */
-.narrative-box{
-  width:100%;
-  margin-top:6px;
-  padding:6px 8px;
-  font-size:13px;
-  border-radius:6px;
-  border:1px solid #ddd;
-  resize:none;
-}
-
-/* ===== DELETE ===== */
-.delete-form{
-  position:absolute;
-  top:8px;
-  right:8px;
-}
-.delete-btn{
-  background:#ff4d4d;
-  color:white;
-  border:none;
-  width:26px;
-  height:26px;
-  border-radius:50%;
-  cursor:pointer;
-}
-</style>
 {% endblock %}
 
 {% block content %}
 
+{% if request.query_params.get('error') == 'invalid_file_type' %}
+<div style="background-color: #f8d7da; color: #721c24; padding: 10px; margin-bottom: 20px; border: 1px solid #f5c6cb; border-radius: 5px;">
+  <strong>Error:</strong> Only image files are allowed. Please upload images only (e.g., .jpg, .png, .gif).
+</div>
+{% endif %}
 
-<div class="profile-header">
-  <div>
-    <h3>{{ current_user }}</h3>
-    <p class="profile-meta">{{ images|length }} posts</p>
+<div class="gallery-navbar">
+  <div class="navbar-left">
+    {% if search_query %}
+    <h3><i class="fas fa-search"></i> Search Results for "{{ search_query }}"</h3>
+    <p class="profile-meta"><i class="fas fa-images"></i> {{ images|length }} public posts found</p>
+    {% else %}
+    <h3><i class="fas fa-user"></i> {{ current_user }}</h3>
+    <p class="profile-meta"><i class="fas fa-images"></i> {{ images|length }} posts</p>
+    {% endif %}
   </div>
+  <div class="navbar-center">
+    <form action="/search" method="get">
+      <input type="text" name="q" placeholder="Search for other users..." value="{{ search_query if search_query else '' }}">
+      <button type="submit">
+        <i class="fas fa-search"></i> Search
+      </button>
+    </form>
+  </div>
+  {% if not search_query %}
+  <div class="navbar-right">
+    <span><i class="fas fa-download"></i> Export My Data:</span>
+    <a href="/my-data/csv" class="export-btn">
+      <i class="fas fa-file-csv"></i> CSV
+    </a>
+    <a href="/my-data/json" class="export-btn">
+      <i class="fas fa-file-code"></i> JSON
+    </a>
+  </div>
+  {% endif %}
 </div>
 
 
@@ -159,6 +73,7 @@
     </button>
     {% endif %}
 
+    {% if not search_query %}
    
     <form method="post" action="/update-narrative">
       <input type="hidden" name="filename" value="{{ img[0] }}">
@@ -175,6 +90,7 @@
     <form method="post" action="/delete/{{ img[0] }}" class="delete-form">
       <button class="delete-btn">&times;</button>
     </form>
+    {% endif %}
 
   </div>
 

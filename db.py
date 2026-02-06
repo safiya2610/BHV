@@ -71,10 +71,14 @@ def init_db():
             filename TEXT NOT NULL,
             metadata TEXT,
             visibility TEXT DEFAULT 'private',
-            narrative TEXT
+            narrative TEXT,
+            upload_date TEXT DEFAULT CURRENT_TIMESTAMP,
+            file_size REAL
         )
         """
     )
+
+
 
     cur.execute(
         "CREATE INDEX IF NOT EXISTS idx_images_user_name ON images(user_name);"

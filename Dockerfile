@@ -18,11 +18,11 @@ RUN useradd --create-home --shell /bin/bash app
 # Set work directory
 WORKDIR /app
 
-# Copy requirements and install dependencies
+# Copy requirements and install dependencies with retry logic
 COPY requirements/base.in .
-RUN pip install --no-cache-dir pip-tools && \
+RUN pip install --no-cache-dir --retries 10 --timeout 300 pip-tools && \
     pip-compile base.in --output-file requirements.txt && \
-    pip install --no-cache-dir -r requirements.txt
+    pip install --no-cache-dir --retries 10 --timeout 300 -r requirements.txt
 
 # Copy application code
 COPY . .

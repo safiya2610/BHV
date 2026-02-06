@@ -1,6 +1,7 @@
 import uuid, json, shutil
 from pathlib import Path
 from fuzzy_emotion import detect_fuzzy_emotion
+from datetime import datetime
 
 UPLOAD_DIR = Path("static/uploads")
 UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
@@ -14,11 +15,15 @@ def save_image(db, user, image, visibility):
     with open(path, "wb") as f:
         shutil.copyfileobj(image.file, f)
 
+    # Get file size in KB
+    file_size_kb = path.stat().st_size / 1024
+
     metadata = detect_fuzzy_emotion(str(path))
+    upload_date = datetime.now().isoformat()
 
     db.execute(
-        "INSERT INTO images (user_name, filename, metadata, visibility) VALUES (?, ?, ?, ?)",
-        (user, filename, json.dumps(metadata), visibility)
+        "INSERT INTO images (user_name, filename, metadata, visibility, upload_date, file_size) VALUES (?, ?, ?, ?, ?, ?)",
+        (user, filename, json.dumps(metadata), visibility, upload_date, file_size_kb)
     )
     db.commit()
 
