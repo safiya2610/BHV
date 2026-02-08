@@ -104,7 +104,7 @@ def generate_user_json(db, user_email: str) -> Dict[str, Any]:
         })
 
     
-    join_date = datetime.now().isoformat()
+    join_date = None
     if images:
         try:
             join_date = min(img['uploaded_at'] for img in images if img['uploaded_at'] != "Unknown")
