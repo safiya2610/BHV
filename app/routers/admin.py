@@ -153,7 +153,7 @@ def generate_admin_users_csv(db) -> str:
                 formatted_join = dt.strftime('%Y-%m-%d')
             else:
                 formatted_join = "N/A"
-        except:
+        except (ValueError, TypeError):
             formatted_join = join_date or "N/A"
 
         writer.writerow([name or "N/A", email, is_admin, total_images, f"{storage_mb:.2f}", formatted_join])
