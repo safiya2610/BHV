@@ -208,3 +208,6 @@ __marimo__/
 
 # Uploaded files
 static/uploads/
+
+# Database files
+users.db
