@@ -209,9 +209,7 @@ def generate_admin_images_csv(db) -> str:
         title = filename
         if metadata:
             try:
-                meta_dict = json.loads(metadata)
-                title = meta_dict.get('title', filename)
-            except:
+            except json.JSONDecodeError:
                 pass
 
         # Format date
