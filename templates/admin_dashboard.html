@@ -1,150 +1,104 @@
 {% extends "base.html" %}
 
 {% block head %}
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-<style>
-.admin-container{
-  max-width:1200px;
-  margin:0 auto;
-  padding:20px;
-}
-
-
-.admin-header{
-  background:linear-gradient(135deg,#4f46e5,#7c3aed);
-  color:#fff;
-  padding:22px;
-  border-radius:12px;
-  margin-bottom:25px;
-  box-shadow:0 6px 20px rgba(79,70,229,.25);
-}
-
-.admin-header h2{
-  margin:0;
-  font-size:28px;
-}
-
-/* ===== TABLE CARD ===== */
-.table-card{
-  background:#fff;
-  border-radius:12px;
-  overflow:hidden;
-  box-shadow:0 4px 12px rgba(0,0,0,.08);
-}
-
-/* ===== TABLE ===== */
-table{
-  width:100%;
-  border-collapse:collapse;
-}
-
-thead{
-  background:linear-gradient(90deg,#4f46e5,#7c3aed);
-  color:white;
-}
-
-th, td{
-  padding:16px 18px;
-  text-align:left;
-}
-
-th{
-  font-weight:600;
-}
-
-tbody tr{
-  border-bottom:1px solid #f1f5f9;
-  transition:.2s;
-}
-
-tbody tr:hover{
-  background:#f8fafc;
-}
-
-
-.view-btn{
-  background:#10b981;
-  color:white;
-  border:none;
-  padding:8px 14px;
-  border-radius:8px;
-  cursor:pointer;
-  font-size:14px;
-  display:inline-flex;
-  align-items:center;
-  gap:6px;
-}
-
-.view-btn:hover{
-  background:#0da271;
-}
-
-
-.empty{
-  padding:40px;
-  text-align:center;
-  color:#94a3b8;
-}
-</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/css/admin_dashboard.css?v=20260215-1">
 {% endblock %}
 
 {% block content %}
+{% include "components/navbar.html" %}
 
-<div class="admin-container">
+<main class="admin-page">
+  <section class="admin-hero">
+    <div class="hero-copy">
+      <p class="hero-kicker">BHV Curation Console</p>
+      <h1>Admin Dashboard</h1>
+      <p>
+        Curate users, monitor activity, and review platform-wide content from a single editorial workspace.
+      </p>
 
+      <div class="hero-stats">
+        <article>
+          <span class="stat-num">{{ users|length }}</span>
+          <span class="stat-label">Registered Users</span>
+        </article>
+        <article>
+          <span class="stat-num">{{ total_images }}</span>
+          <span class="stat-label">Total Artifacts</span>
+        </article>
+        <article>
+          <span class="stat-num">{{ total_admins }}</span>
+          <span class="stat-label">Admin Accounts</span>
+        </article>
+      </div>
 
-  <div class="admin-header">
-    <h2><i class="fas fa-user-shield"></i> Admin Dashboard</h2>
-    <p>Manage users and view their galleries</p>
-  </div>
+      <div class="hero-actions">
+        <a href="/admin/export/users" class="action-btn">
+          <i class="fas fa-users"></i> Export Users CSV
+        </a>
+        <a href="/admin/export/images" class="action-btn secondary">
+          <i class="fas fa-images"></i> Export Images CSV
+        </a>
+      </div>
+    </div>
 
-  <div class="export-section" style="margin-bottom: 25px; background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,.08);">
-    <h3 style="margin-top: 0; color: #4f46e5;"><i class="fas fa-download"></i> System Exports</h3>
-    <a href="/admin/export/users" class="view-btn" style="margin-right: 10px; background: #4f46e5;">
-      <i class="fas fa-users"></i> Export Users CSV
-    </a>
-    <a href="/admin/export/images" class="view-btn" style="background: #7c3aed;">
-      <i class="fas fa-images"></i> Export Images CSV
-    </a>
-  </div>
+    <div class="hero-wall" aria-hidden="true">
+      <figure class="frame frame-large">
+        <img src="/static/uploads/c10ecb08ad7848f0b6956324770c1ee1.png" onerror="this.src='/static/images/gallery.png'" alt="">
+      </figure>
+      <figure class="frame frame-small">
+        <img src="/static/uploads/c37ed84b03e945adb9479648daaee063.png" onerror="this.src='/static/images/home2.png'" alt="">
+      </figure>
+      <figure class="frame frame-small">
+        <img src="/static/uploads/b19179fa9fe74fbc8960e2b1bde88b86.png" onerror="this.src='/static/images/home3.jpg'" alt="">
+      </figure>
+      <figure class="frame frame-small">
+        <img src="/static/images/home4.jpg" alt="">
+      </figure>
+    </div>
+  </section>
 
- 
-  <div class="table-card">
-    <table>
-      <thead>
-        <tr>
-          <th>User Name</th>
-          <th>Email</th>
-          <th style="text-align:center;">Action</th>
-        </tr>
-      </thead>
+  <section class="admin-table-wrap">
+    <div class="table-head">
+      <h2>User Management</h2>
+      <span>{{ users|length }} users</span>
+    </div>
 
-      <tbody>
-        {% for u in users %}
-        <tr>
-          <td>{{ u.name }}</td>
-          <td>{{ u.email }}</td>
-          <td style="text-align:center;">
-            <a href="/admin/view-gallery/{{ u.email | urlencode }}" target="_blank">
-              <button class="view-btn">
+    <div class="table-scroll">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>User Name</th>
+            <th>Email</th>
+            <th>Posts</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for u in users %}
+          <tr>
+            <td>{{ u.name }}</td>
+            <td>{{ u.email }}</td>
+            <td><span class="post-pill">{{ u.total_posts }}</span></td>
+            <td>
+              <a class="view-link" href="/admin/view-gallery/{{ u.email | urlencode }}" target="_blank" rel="noopener noreferrer">
                 <i class="fas fa-images"></i> View Gallery
-              </button>
-            </a>
-          </td>
-        </tr>
-        {% else %}
-        <tr>
-          <td colspan="3" class="empty">
-            <i class="fas fa-users-slash"></i><br>
-            No users found
-          </td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
-
-</div>
-
+              </a>
+            </td>
+          </tr>
+          {% else %}
+          <tr>
+            <td colspan="4" class="empty-cell">
+              <i class="fas fa-users-slash"></i>
+              <p>No users found</p>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+</main>
 {% endblock %}

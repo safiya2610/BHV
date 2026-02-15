@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+
+{% block head %}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Orbitron:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/css/docs.css?v=20260216-4">
+{% endblock %}
+
+{% block content %}
+<main class="meshery-docs">
+  <header class="docs-topbar">
+    <a href="/docs" class="docs-brand">
+      <span class="brand-mark"></span>
+      <span class="brand-word">BHV</span>
+      <span class="brand-divider"></span>
+      <span class="brand-sub">Docs</span>
+    </a>
+    <nav class="docs-topnav">
+      <a href="/docs">Quick Start</a>
+      <a href="/docs">Website</a>
+      <a href="/docs">Discuss</a>
+      <a href="/docs">Catalog</a>
+      <a href="/docs">Blog</a>
+    </nav>
+    <form action="/docs" method="get" class="docs-topsearch">
+      <i class="fas fa-search"></i>
+      <input type="text" name="q" placeholder="Search this site..." value="{{ search_query if search_query else '' }}">
+    </form>
+  </header>
+
+  <section class="docs-layout">
+    <aside class="docs-leftnav">
+      <form action="/docs" method="get" class="left-search">
+        <i class="fas fa-search"></i>
+        <input type="text" name="q" placeholder="Search this site..." value="{{ search_query if search_query else '' }}">
+      </form>
+
+      <h3>Documentation [v1.0.x]</h3>
+      <nav class="left-links">
+        <a href="/docs" class="{% if not selected_slug %}active{% endif %}">
+          <i class="fas fa-map"></i> Overview & Installation
+        </a>
+        {% for doc in docs_entries %}
+        <a href="/docs?doc={{ doc.slug }}" class="{% if selected_slug == doc.slug %}active{% endif %}">
+          <i class="fas fa-code-branch"></i> {{ doc.title }}
+        </a>
+        {% endfor %}
+      </nav>
+    </aside>
+
+    <section class="docs-main">
+      {% if selected_doc %}
+      <article class="doc-article">
+        <p class="doc-section">{{ selected_doc.section }}</p>
+        <h1>{{ selected_doc.title }}</h1>
+        {% if selected_doc.summary %}
+        <p class="doc-summary">{{ selected_doc.summary }}</p>
+        {% endif %}
+        <div class="doc-content">
+          {{ (selected_doc.content or "") | replace('\n', '<br>') | safe }}
+        </div>
+        {% if selected_doc.attachment_name %}
+        <a class="doc-file" href="/static/docs_uploads/{{ selected_doc.attachment_name }}" target="_blank" rel="noopener noreferrer">
+          <i class="fas fa-paperclip"></i> Open Attachment
+        </a>
+        {% endif %}
+      </article>
+      {% else %}
+      <section class="docs-hero">
+        <div class="hero-logo-wrap">
+          <span class="hero-mark"></span>
+          <span class="hero-logo">BHV</span>
+        </div>
+        <h1>BHV Documentation</h1>
+        <p>
+          Create and maintain project documentation for fuzzy approach logic, workflows,
+          implementation notes, and references.
+        </p>
+      </section>
+
+      <section class="docs-groups">
+        {% for section_name, section_count in section_counts %}
+        <article class="group-card">
+          <h2>{{ section_name }}</h2>
+          <p>{{ section_count }} page{% if section_count != 1 %}s{% endif %}</p>
+        </article>
+        {% else %}
+        <article class="group-card">
+          <h2>Documentation [v1.0.x]</h2>
+          <p>0 pages</p>
+        </article>
+        {% endfor %}
+      </section>
+
+      <section class="docs-list">
+        {% for doc in docs_entries %}
+        <article class="doc-card">
+          <h3><a href="/docs?doc={{ doc.slug }}">{{ doc.title }}</a></h3>
+          <p>{{ doc.summary if doc.summary else "Open this documentation page for details." }}</p>
+          <span>{{ doc.section }}</span>
+        </article>
+        {% else %}
+        <p class="no-docs">No documentation pages yet.</p>
+        {% endfor %}
+      </section>
+      {% endif %}
+
+      {% if is_admin %}
+      <section class="docs-uploader">
+        <h4>Publish Documentation</h4>
+        <p>Upload docs about fuzzy approach, architecture, tutorials, and references.</p>
+
+        {% if upload_error == "admin_only" %}
+        <p class="upload-error">Only admins can upload docs.</p>
+        {% elif upload_error == "missing_required_fields" %}
+        <p class="upload-error">Title and content are required.</p>
+        {% elif upload_error == "invalid_attachment_type" %}
+        <p class="upload-error">Unsupported attachment type.</p>
+        {% endif %}
+
+        <form action="/docs/upload" method="post" enctype="multipart/form-data">
+          <input name="title" type="text" placeholder="Title" required>
+          <input name="section" type="text" placeholder="Section" value="Documentation [v1.0.x]">
+          <textarea name="summary" rows="2" placeholder="Short summary"></textarea>
+          <textarea name="content" rows="6" placeholder="Document content..." required></textarea>
+          <input name="tags" type="text" placeholder="Tags (comma separated)">
+          <input name="attachment" type="file">
+          <button type="submit">Publish Document</button>
+        </form>
+      </section>
+      {% endif %}
+    </section>
+  </section>
+</main>
+{% endblock %}

@@ -1,17 +1,131 @@
 {% extends "base.html" %}
 
 {% block head %}
-  <link rel="stylesheet" href="/static/css/navbar.css">
-
- <link rel="stylesheet" href="/static/css/cards.css">
-
- <link rel="stylesheet" href="/static/css/gallery_pg.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/home.css">
 {% endblock %}
 
 {% block content %}
-
   {% include "components/navbar.html" %}
-  {% include "components/cards.html" %}
-  {% include "components/parallax.html" %}
-  {% include "components/gallery_pg.html" %}
+
+  <main class="home-page">
+    <section class="hero" data-reveal>
+      <div class="hero-copy">
+        <p class="hero-kicker">BHV Digital Museum</p>
+        <h1>Explore art, behavior, and emotion in one living archive.</h1>
+        <p class="hero-subtitle">
+          Inspired by curatorial storytelling, this space brings visual culture and research together
+          so every scroll feels like a new exhibition.
+        </p>
+        <div class="hero-actions">
+          <a href="/gallery" class="btn btn-primary">Enter Gallery</a>
+          <a href="/gallery" class="btn btn-secondary">Browse Collections</a>
+        </div>
+        <div class="hero-pills">
+          <span>Curated storytelling</span>
+          <span>Behavioral archives</span>
+          <span>Community memory</span>
+        </div>
+        <div class="hero-metrics">
+          <div>
+            <span class="metric-number">1200+</span>
+            <span class="metric-label">Curated visuals</span>
+          </div>
+          <div>
+            <span class="metric-number">35</span>
+            <span class="metric-label">Thematic journeys</span>
+          </div>
+          <div>
+            <span class="metric-number">24/7</span>
+            <span class="metric-label">Open archive access</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero-visual">
+        <article class="visual-card visual-main">
+          <img src="/static/images/home1.png" alt="Classical painting with rich tones">
+        </article>
+        <article class="visual-card visual-top">
+          <img src="/static/images/home2.png" alt="Stylized portrait illustration">
+        </article>
+        <article class="visual-card visual-bottom">
+          <img src="/static/images/home4.jpg" alt="Art composition with warm color palette">
+        </article>
+        <aside class="visual-float">
+          <p>Current spotlight</p>
+          <strong>Stories of Identity</strong>
+          <span>12 works in this collection</span>
+        </aside>
+      </div>
+    </section>
+
+    <section class="feature-story" data-reveal>
+      <div class="feature-image-wrap">
+        <img src="/static/images/gallery.png" alt="Gallery highlight collage">
+      </div>
+      <div class="feature-text">
+        <p class="section-kicker">Featured Experience</p>
+        <h2>A visual journey designed like an exhibit, not a feed.</h2>
+        <p>
+          Move across layered narratives that connect visual language, social behavior, and mood.
+          Each collection is arranged to feel cinematic and intentional.
+        </p>
+        <a href="/gallery" class="text-link">Start the journey</a>
+      </div>
+    </section>
+
+    <section class="collection-zone" data-reveal>
+      <div class="section-head">
+        <p class="section-kicker">Curated Themes</p>
+        <h2>Discover by mood and perspective</h2>
+      </div>
+      <div class="collection-grid">
+        <a href="/gallery" class="collection-card">
+          <img src="/static/images/home1.png" alt="Legacy and memory themed artwork">
+          <span>Legacy</span>
+        </a>
+        <a href="/gallery" class="collection-card">
+          <img src="/static/images/home2.png" alt="Identity and expression themed artwork">
+          <span>Identity</span>
+        </a>
+        <a href="/gallery" class="collection-card">
+          <img src="/static/images/home3.jpg" alt="Human connection themed artwork">
+          <span>Connection</span>
+        </a>
+        <a href="/gallery" class="collection-card">
+          <img src="/static/images/home4.jpg" alt="Visual experiment themed artwork">
+          <span>Experiment</span>
+        </a>
+      </div>
+    </section>
+
+    <section class="callout" data-reveal>
+      <img src="/static/images/gallery.png" alt="BHV gallery preview banner">
+      <div class="callout-overlay">
+        <p class="section-kicker">Open Exhibition</p>
+        <h2>Step into the full BHV gallery experience.</h2>
+        <a href="/gallery" class="btn btn-primary">Open Gallery</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer" data-reveal>
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <h3>BHV Platform</h3>
+        <p>Designed to preserve visual narratives with dignity, context, and care.</p>
+      </div>
+      <div class="footer-links">
+        <a href="/">Home</a>
+        <a href="/gallery">Gallery</a>
+        <a href="/logout">Logout</a>
+      </div>
+      <p class="footer-note">BHV Digital Archive</p>
+    </div>
+  </footer>
+
+  <script src="/static/js/home.js"></script>
 {% endblock %}

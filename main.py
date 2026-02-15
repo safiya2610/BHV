@@ -20,7 +20,12 @@ handler = logging.StreamHandler(sys.stdout)
 handler.setFormatter(logging.Formatter("%(asctime)s - %(levelname)s - %(message)s"))
 logger.addHandler(handler)
 
-app = FastAPI(title="BHV Platform", version="0.1.0")
+app = FastAPI(
+    title="BHV Platform",
+    version="0.1.0",
+    docs_url="/api-docs",
+    redoc_url="/api-redoc",
+)
 
 init_db()
 

@@ -94,5 +94,32 @@ def init_db():
         """
     )
 
+    # ===== DOCS TABLE =====
+    cur.execute(
+        """
+        CREATE TABLE IF NOT EXISTS docs_entries (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            slug TEXT UNIQUE NOT NULL,
+            title TEXT NOT NULL,
+            section TEXT NOT NULL DEFAULT 'General',
+            summary TEXT,
+            content TEXT NOT NULL,
+            tags TEXT,
+            attachment_name TEXT,
+            created_by TEXT,
+            created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+            updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
+            is_published INTEGER DEFAULT 1
+        )
+        """
+    )
+
+    cur.execute(
+        "CREATE INDEX IF NOT EXISTS idx_docs_entries_section ON docs_entries(section);"
+    )
+    cur.execute(
+        "CREATE INDEX IF NOT EXISTS idx_docs_entries_slug ON docs_entries(slug);"
+    )
+
     db.commit()
     db.close()

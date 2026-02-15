@@ -15,16 +15,41 @@ def admin_dashboard(request: Request, db=Depends(get_db)):
     request.session.pop("view_user", None)
 
     cur = db.cursor()
-    cur.execute("SELECT id, name, email FROM users")
+    cur.execute(
+        """
+        SELECT u.id, u.name, u.email, COUNT(i.id) AS total_posts
+        FROM users u
+        LEFT JOIN images i ON i.user_name = u.email
+        GROUP BY u.id, u.name, u.email
+        ORDER BY u.name COLLATE NOCASE
+        """
+    )
     rows = cur.fetchall()
 
-    users = [{"id": r[0], "name": r[1], "email": r[2]} for r in rows]
+    users = [
+        {
+            "id": r[0],
+            "name": r[1],
+            "email": r[2],
+            "total_posts": r[3]
+        }
+        for r in rows
+    ]
+
+    cur.execute("SELECT COUNT(*) FROM admins")
+    total_admins = cur.fetchone()[0]
+
+    cur.execute("SELECT COUNT(*) FROM images")
+    total_images = cur.fetchone()[0]
 
     return templates.TemplateResponse(
         "admin_dashboard.html",
         {
             "request": request,
-            "users": users
+            "users": users,
+            "user": request.session.get("user"),
+            "total_admins": total_admins,
+            "total_images": total_images
         }
     )
 
