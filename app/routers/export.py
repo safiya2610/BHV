@@ -44,7 +44,7 @@ def generate_user_csv(db, user_email: str) -> str:
                 meta_dict = json.loads(metadata)
                 title = meta_dict.get('title', filename)
                 description = meta_dict.get('description', narrative or "")
-            except:
+            except json.JSONDecodeError:
                 title = filename
                 description = narrative or ""
 
