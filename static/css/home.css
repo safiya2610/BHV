@@ -591,3 +591,33 @@ body {
     justify-content: flex-start;
   }
 }
+/* Icon Placeholder Styles */
+.icon-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  background: linear-gradient(135deg, #f0d5c3 0%, #d9c5b8 100%);
+  position: relative;
+  gap: 8px;
+}
+
+.icon-placeholder i {
+  font-size: 3.5rem;
+  color: #a47540;
+  opacity: 0.8;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.icon-placeholder:hover i {
+  transform: scale(1.1);
+  opacity: 1;
+}
+
+.placeholder-label {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #5a4a3b;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}

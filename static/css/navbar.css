@@ -28,11 +28,9 @@
 }
 
 .user-icon {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  border: 1px solid rgba(69, 51, 32, 0.22);
-  background: rgba(255, 255, 255, 0.68);
+  font-size: 28px;
+  color: #a47540;
+  cursor: pointer;
 }
 
 .nav-left .brand {
@@ -45,18 +43,20 @@
 .logout-link {
   display: flex;
   align-items: center;
+  text-decoration: none;
 }
 
 .logout-icon {
-  width: 18px;
-  height: 18px;
-  filter: brightness(0);
+  font-size: 18px;
+  color: #493a2f;
   cursor: pointer;
   opacity: 0.85;
+  transition: opacity 0.2s ease, color 0.2s ease;
 }
 
 .logout-icon:hover {
   opacity: 1;
+  color: #2f261f;
 }
 
 .menu {

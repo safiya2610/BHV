@@ -37,6 +37,25 @@ html, body {
   display: block;
 }
 
+.card.icon-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #f0d5c3 0%, #d9c5b8 100%);
+}
+
+.card.icon-placeholder i {
+  font-size: 4rem;
+  color: #a47540;
+  opacity: 0.8;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.card.icon-placeholder:hover i {
+  transform: scale(1.15);
+  opacity: 1;
+}
+
 
 .card:nth-child(odd) {
   transform: translateX(0px);
