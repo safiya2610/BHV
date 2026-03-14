@@ -1,4 +1,6 @@
-import uuid, json, shutil
+import uuid
+import json
+import shutil
 from pathlib import Path
 from fuzzy_emotion import detect_fuzzy_emotion
 from datetime import datetime

@@ -1,7 +1,7 @@
 import time
-from typing import Dict, Deque, Tuple
+from typing import Dict, Deque
 from collections import deque
-from fastapi import Request, HTTPException, status, Depends
+from fastapi import Request, HTTPException, status
 
 
 class InMemoryRateLimiter:

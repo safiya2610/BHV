@@ -7,7 +7,7 @@ import os
 import uuid
 
 from db import get_db
-from app.services.image_service import save_image, delete_image
+from app.services.image_service import delete_image
 from app.services.admin_service import is_admin
 from fuzzy_emotion import detect_fuzzy_emotion
 

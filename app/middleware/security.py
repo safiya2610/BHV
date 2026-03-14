@@ -1,11 +1,9 @@
-from typing import Callable, Awaitable
 from starlette.types import ASGIApp, Receive, Scope, Send
 from starlette.requests import Request
-from starlette.responses import Response, JSONResponse, PlainTextResponse
+from starlette.responses import JSONResponse
 from fastapi import FastAPI, HTTPException
 from fastapi.exceptions import RequestValidationError
 import os
-import traceback
 
 
 class SecurityHeadersMiddleware:

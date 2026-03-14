@@ -51,7 +51,7 @@ def generate_user_csv(db, user_email: str) -> str:
         try:
             dt = datetime.fromisoformat(upload_date)
             formatted_date = dt.strftime('%Y-%m-%d %H:%M:%S')
-        except:
+        except Exception:
             formatted_date = upload_date or "Unknown"
 
         writer.writerow([title, description, filename, f"{file_size:.2f}" if file_size else "0.00", formatted_date, meta_str])
@@ -91,7 +91,7 @@ def generate_user_json(db, user_email: str) -> Dict[str, Any]:
         if metadata:
             try:
                 meta_dict = json.loads(metadata)
-            except:
+            except json.JSONDecodeError:
                 pass
 
         images.append({
@@ -108,7 +108,7 @@ def generate_user_json(db, user_email: str) -> Dict[str, Any]:
     if images:
         try:
             join_date = min(img['uploaded_at'] for img in images if img['uploaded_at'] != "Unknown")
-        except:
+        except Exception:
             pass
 
     return {

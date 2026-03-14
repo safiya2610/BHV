@@ -213,7 +213,7 @@ def generate_admin_images_csv(db) -> str:
         title = filename
         if metadata:
             try:
-                data = json.loads(request.body)
+                json.loads(metadata)  
             except json.JSONDecodeError:
                 pass
 
@@ -221,7 +221,7 @@ def generate_admin_images_csv(db) -> str:
         try:
             dt = datetime.fromisoformat(upload_date)
             formatted_date = dt.strftime('%Y-%m-%d %H:%M:%S')
-        except:
+        except Exception:
             formatted_date = upload_date or "Unknown"
 
         writer.writerow([

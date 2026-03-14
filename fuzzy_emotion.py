@@ -1,5 +1,4 @@
 import json
-import math
 import datetime
 from collections import defaultdict
 
@@ -13,7 +12,7 @@ import colorsys
 try:
     with open("cleaned_data.json", "r", encoding="utf-8") as f:
         CLEANED = json.load(f)
-except Exception as e:
+except Exception:
     CLEANED = {"colors": []}  
 
 COLOR_TO_EMOTIONS = {}
@@ -155,7 +154,7 @@ def detect_fuzzy_emotion(image_path, k=5):
    
     pos = {"happiness", "joy", "optimism", "love", "peace", "purity", "energy", "enthusiasm"}
     neg = {"sadness", "grief", "anger", "fear", "death", "disgust"}
-    neu = set()
+    
     group_scores = {"positive": 0.0, "neutral": 0.0, "negative": 0.0}
     for emo, score in emotion_scores.items():
         if emo in pos:
