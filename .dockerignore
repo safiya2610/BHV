@@ -1,0 +1,42 @@
+# Git
+.git
+.gitignore
+
+# Documentation
+README.md
+CODE_OF_CONDUCT.md
+CONTRIBUTING.md
+LICENSE
+
+# Tests
+tests/
+
+# Development files
+requirements/dev.in
+requirements/test.in
+requirements/lock.txt
+
+# Environment files (handled via docker-compose)
+.env
+
+# IDE
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.swp
+
+# Volume-mounted files (handled via docker-compose)
+users.db
+static/uploads/
+cleaned_data.json
+
+# Other potential issues
+.qodo

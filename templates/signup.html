@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block head %}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Sora:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', path='css/auth.css') }}?v=20260215-2">
+{% endblock %}
+
+{% block content %}
+<main class="auth-page auth-signup">
+  <section class="auth-showcase">
+    <img src="/static/images/BHV_logo.png" class="showcase-logo" alt="BHV">
+    <p class="showcase-kicker">Behavioral Health Vault</p>
+    <h1>Create your secure visual archive.</h1>
+    <p class="showcase-copy">
+      Build a private collection of stories, drawings, and memories with thoughtful context and clear ownership.
+    </p>
+    <div class="showcase-gallery">
+      <div class="showcase-placeholder">
+        <i class="fas fa-star"></i>
+      </div>
+      <img src="/static/images/home3.jpg" alt="Artwork preview two">
+      <img src="/static/images/home1.png" alt="Artwork preview three">
+    </div>
+  </section>
+
+  <section class="auth-panel">
+    <div class="auth-card">
+      <p class="auth-kicker">Join BHV</p>
+      <h2>Create account</h2>
+      <p class="auth-subtitle">Start preserving your visual narrative in minutes.</p>
+
+      {% if error %}
+      <p class="error-text">{{ error }}</p>
+      {% endif %}
+
+      <form method="post" action="/signup" class="auth-form">
+        <label>Name</label>
+        <input name="name" type="text" placeholder="Your name" value="{{ prefill_name if prefill_name else '' }}" required>
+
+        <label>Email</label>
+        <input name="email" type="email" placeholder="you@example.com" value="{{ prefill_email if prefill_email else '' }}" required>
+
+        <label>Password</label>
+        <input name="password" type="password" placeholder="Create password" required>
+
+        <button type="submit" class="btn-primary">Create Account</button>
+      </form>
+
+      <p class="auth-footer">
+        Already have an account? <a href="/login">Sign in</a>
+      </p>
+    </div>
+  </section>
+</main>
+{% endblock %}

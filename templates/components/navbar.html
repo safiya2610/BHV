@@ -1,0 +1,34 @@
+<header class="navbar">
+
+
+  <div class="nav-left">
+    <img src="/static/images/BHV_logo.png" alt="BHV Logo" class="nav-logo">
+  </div>
+
+ 
+  <nav class="nav-center">
+    <ul class="menu">
+      <li><a href="/">Home</a></li>
+      <li><a href="/gallery">Gallery</a></li>
+     {% if request.session.get("is_admin") %}
+<li><a href="/admin">Admin Dashboard</a></li>
+{% endif %}
+      <li><a href="/docs">Docs</a></li>
+      <div class="border"></div>
+    </ul>
+  </nav>
+
+  <div class="nav-right">
+    {% if user %}
+      <i class="fas fa-circle-user user-icon"></i>
+      <span class="user-name">{{ user }}</span>
+
+      <a href="/logout" class="logout-link">
+        <i class="fas fa-sign-out-alt logout-icon"></i>
+      </a>
+    {% else %}
+      <a href="/login" class="signin-btn">Sign in</a>
+    {% endif %}
+  </div>
+
+</header>

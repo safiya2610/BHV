@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+
+{% block head %}
+<link rel="stylesheet" href="/static/css/gallery.css">
+
+<style>
+.admin-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:14px 18px;
+  margin-bottom:16px;
+  border-bottom:1px solid #e6e6e6;
+}
+
+.admin-header h3{
+  margin:0;
+  font-size:22px;
+}
+
+.admin-badge{
+  background:#c2185b;
+  color:#fff;
+  padding:4px 10px;
+  border-radius:6px;
+  font-size:12px;
+}
+
+/* reuse gallery styles */
+.view-btn{
+  margin-top:8px;
+  background:#efefef;
+  border:none;
+  padding:7px 12px;
+  border-radius:8px;
+  cursor:pointer;
+  font-size:13px;
+}
+.view-btn:hover{ background:#ddd; }
+
+.meta-overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.55);
+  display:none;
+  justify-content:center;
+  align-items:center;
+  z-index:9999;
+}
+
+.meta-card{
+  background:#fff;
+  width:90%;
+  max-width:520px;
+  max-height:80vh;
+  overflow:auto;
+  border-radius:12px;
+  padding:16px 18px;
+  position:relative;
+}
+
+.meta-close{
+  position:absolute;
+  top:10px;
+  right:14px;
+  font-size:22px;
+  border:none;
+  background:none;
+  cursor:pointer;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="admin-header">
+  <div>
+    <h3>User Gallery: {{ profile_user }}</h3>
+    <p class="profile-meta">{{ images|length }} posts</p>
+  </div>
+  <span class="admin-badge">ADMIN VIEW</span>
+</div>
+
+<div class="grid-container">
+
+{% for img in images %}
+  <div class="grid-card">
+
+    <img src="/static/uploads/{{ img[0] }}" class="grid-thumb">
+
+    {% if img[1] %}
+    <button class="view-btn" onclick="openMeta('{{ img[0] }}')">
+      View MetaData
+    </button>
+    {% endif %}
+
+    <form method="post" action="/admin/update-narrative">
+      <input type="hidden" name="filename" value="{{ img[0] }}">
+      <input type="hidden" name="user_email" value="{{ profile_user }}">
+      <textarea
+        name="narrative"
+        rows="2"
+        class="narrative-box"
+        placeholder="Edit user narrative..."
+        onblur="this.form.submit()"
+      >{{ img[2] if img[2] else '' }}</textarea>
+    </form>
+
+    <form method="post" action="/admin/delete-image" class="delete-form">
+      <input type="hidden" name="filename" value="{{ img[0] }}">
+      <input type="hidden" name="user_email" value="{{ profile_user }}">
+      <button class="delete-btn">&times;</button>
+    </form>
+
+  </div>
+
+  {% if img[1] %}
+  <div id="meta-{{ img[0] }}" class="meta-overlay">
+    <div class="meta-card">
+      <button class="meta-close" onclick="closeMeta('{{ img[0] }}')">✕</button>
+      <h3>Image MetaData</h3>
+      <ul>
+        {% for key, value in img[1].items() %}
+        <li><strong>{{ key }}:</strong> {{ value }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+  {% endif %}
+
+{% else %}
+  <p style="text-align:center;color:#777;margin-top:20px;">No posts</p>
+{% endfor %}
+
+</div>
+
+<script>
+function openMeta(id){
+  document.getElementById("meta-" + id).style.display = "flex";
+}
+function closeMeta(id){
+  document.getElementById("meta-" + id).style.display = "none";
+}
+</script>
+
+{% endblock %}

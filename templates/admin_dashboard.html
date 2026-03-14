@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% block head %}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/css/admin_dashboard.css?v=20260215-1">
+{% endblock %}
+
+{% block content %}
+{% include "components/navbar.html" %}
+
+<main class="admin-page">
+  <section class="admin-hero">
+    <div class="hero-copy">
+      <p class="hero-kicker">BHV Curation Console</p>
+      <h1>Admin Dashboard</h1>
+      <p>
+        Curate users, monitor activity, and review platform-wide content from a single editorial workspace.
+      </p>
+
+      <div class="hero-stats">
+        <article>
+          <span class="stat-num">{{ users|length }}</span>
+          <span class="stat-label">Registered Users</span>
+        </article>
+        <article>
+          <span class="stat-num">{{ total_images }}</span>
+          <span class="stat-label">Total Artifacts</span>
+        </article>
+        <article>
+          <span class="stat-num">{{ total_admins }}</span>
+          <span class="stat-label">Admin Accounts</span>
+        </article>
+      </div>
+
+      <div class="hero-actions">
+        <a href="/admin/export/users" class="action-btn">
+          <i class="fas fa-users"></i> Export Users CSV
+        </a>
+        <a href="/admin/export/images" class="action-btn secondary">
+          <i class="fas fa-images"></i> Export Images CSV
+        </a>
+      </div>
+    </div>
+
+    <div class="hero-wall" aria-hidden="true">
+      <figure class="frame frame-large">
+        <img src="/static/uploads/c10ecb08ad7848f0b6956324770c1ee1.png" onerror="this.src='/static/images/gallery.png'" alt="">
+      </figure>
+      <figure class="frame frame-small">
+        <img src="/static/uploads/c37ed84b03e945adb9479648daaee063.png" onerror="this.src='/static/images/home2.png'" alt="">
+      </figure>
+      <figure class="frame frame-small">
+        <img src="/static/uploads/b19179fa9fe74fbc8960e2b1bde88b86.png" onerror="this.src='/static/images/home3.jpg'" alt="">
+      </figure>
+      <figure class="frame frame-small icon-placeholder-frame">
+        <i class="fas fa-images"></i>
+      </figure>
+    </div>
+  </section>
+
+  <section class="admin-table-wrap">
+    <div class="table-head">
+      <h2>User Management</h2>
+      <span>{{ users|length }} users</span>
+    </div>
+
+    <div class="table-scroll">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>User Name</th>
+            <th>Email</th>
+            <th>Posts</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for u in users %}
+          <tr>
+            <td>{{ u.name }}</td>
+            <td>{{ u.email }}</td>
+            <td><span class="post-pill">{{ u.total_posts }}</span></td>
+            <td>
+              <a class="view-link" href="/admin/view-gallery/{{ u.email | urlencode }}" target="_blank" rel="noopener noreferrer">
+                <i class="fas fa-images"></i> View Gallery
+              </a>
+            </td>
+          </tr>
+          {% else %}
+          <tr>
+            <td colspan="4" class="empty-cell">
+              <i class="fas fa-users-slash"></i>
+              <p>No users found</p>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+</main>
+{% endblock %}

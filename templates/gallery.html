@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+
+{% block head %}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/css/gallery.css?v=20260215-3">
+{% endblock %}
+
+{% block content %}
+{% set user = current_user if current_user is defined else None %}
+{% include "components/navbar.html" %}
+
+<main class="gallery-page">
+  {% if request.query_params.get('error') == 'invalid_file_type' %}
+  <div class="alert-error">
+    <strong>Error:</strong> Only image files are allowed. Please upload images only (e.g., .jpg, .png, .gif).
+  </div>
+  {% endif %}
+
+  <section class="gallery-top">
+    <section class="gallery-hero">
+      <p class="hero-kicker">BHV Curated Gallery</p>
+      {% if search_query %}
+      <h1>Search results for "{{ search_query }}"</h1>
+      <p>Exploring public visual stories shared by the community.</p>
+      {% else %}
+      <h1>Your visual archive</h1>
+      <p>Store meaningful images, annotate them, and build a personal exhibition over time.</p>
+      {% endif %}
+    </section>
+
+    <section class="gallery-toolbar">
+      <div class="toolbar-left">
+        {% if search_query %}
+        <h3><i class="fas fa-search"></i> {{ images|length }} public posts found</h3>
+        <p class="profile-meta"><i class="fas fa-images"></i> Viewing matched community posts</p>
+        {% else %}
+        <h3><i class="fas fa-user"></i> {{ current_user }}</h3>
+        <p class="profile-meta"><i class="fas fa-images"></i> {{ images|length }} posts</p>
+        {% endif %}
+      </div>
+
+      <div class="toolbar-center">
+        <form action="/search" method="get">
+          <input type="text" name="q" placeholder="Search for other users..." value="{{ search_query if search_query else '' }}">
+          <button type="submit">
+            <i class="fas fa-search"></i> Search
+          </button>
+        </form>
+      </div>
+
+      {% if not search_query %}
+      <div class="toolbar-right">
+        <span><i class="fas fa-download"></i> Export My Data:</span>
+        <a href="/my-data/csv" class="export-btn">
+          <i class="fas fa-file-csv"></i> CSV
+        </a>
+        <a href="/my-data/json" class="export-btn">
+          <i class="fas fa-file-code"></i> JSON
+        </a>
+      </div>
+      {% endif %}
+    </section>
+
+    <section class="upload-panel">
+      <form class="upload-form" action="/upload" method="post" enctype="multipart/form-data">
+        <input type="file" name="image" required>
+
+        <select name="visibility">
+          <option value="private">Private</option>
+          <option value="public">Public</option>
+        </select>
+
+        <button class="btn-upload">Upload</button>
+      </form>
+    </section>
+  </section>
+
+  <hr class="section-divider">
+
+  <div class="grid-container">
+    {% for img in images %}
+    <div class="grid-card">
+      <img src="/static/uploads/{{ img[0] }}" class="grid-thumb">
+
+      {% if img[1] is not none %}
+      <button class="view-btn" onclick="openMeta('{{ img[0] }}')">
+        View MetaData
+      </button>
+      {% endif %}
+
+      {% if not search_query %}
+      <form method="post" action="/update-narrative">
+        <input type="hidden" name="filename" value="{{ img[0] }}">
+        <textarea
+          name="narrative"
+          rows="2"
+          class="narrative-box"
+          placeholder="Write a note..."
+          onblur="this.form.submit()"
+        >{{ img[2] if img[2] else '' }}</textarea>
+      </form>
+
+      <form method="post" action="/delete/{{ img[0] }}" class="delete-form">
+        <button class="delete-btn">&times;</button>
+      </form>
+      {% endif %}
+    </div>
+
+    {% if img[1] is not none %}
+    <div id="meta-{{ img[0] }}" class="meta-overlay">
+      <div class="meta-card">
+        <button class="meta-close" onclick="closeMeta('{{ img[0] }}')">&times;</button>
+        <h3>Image MetaData</h3>
+        <pre>{{ img[1] | tojson(indent=2) }}</pre>
+      </div>
+    </div>
+    {% endif %}
+    {% else %}
+    <p class="empty-state">No posts yet. Upload your first image to begin your archive.</p>
+    {% endfor %}
+  </div>
+</main>
+
+<script>
+function openMeta(id){
+  document.getElementById("meta-" + id).style.display = "flex";
+}
+function closeMeta(id){
+  document.getElementById("meta-" + id).style.display = "none";
+}
+</script>
+{% endblock %}

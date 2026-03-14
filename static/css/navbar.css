@@ -1,0 +1,154 @@
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 200;
+  height: 82px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 0 32px;
+  background: rgba(248, 243, 235, 0.88);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(61, 47, 31, 0.1);
+  box-shadow: 0 8px 24px rgba(66, 51, 33, 0.07);
+  font-family: "Manrope", sans-serif;
+}
+
+.nav-logo {
+  width: auto;
+  height: 52px;
+}
+
+.nav-center {
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(76, 56, 34, 0.16);
+  background: rgba(255, 255, 255, 0.55);
+}
+
+.user-icon {
+  font-size: 28px;
+  color: #a47540;
+  cursor: pointer;
+}
+
+.nav-left .brand {
+  font-size: 1.12rem;
+  font-weight: 600;
+  text-decoration: none;
+  color: #2a221d;
+}
+
+.logout-link {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+}
+
+.logout-icon {
+  font-size: 18px;
+  color: #493a2f;
+  cursor: pointer;
+  opacity: 0.85;
+  transition: opacity 0.2s ease, color 0.2s ease;
+}
+
+.logout-icon:hover {
+  opacity: 1;
+  color: #2f261f;
+}
+
+.menu {
+  list-style: none;
+  display: flex;
+  justify-content: center;
+  gap: 22px;
+  padding: 0;
+  margin: 0;
+  position: relative;
+}
+
+.menu li {
+  position: relative;
+}
+
+.menu li a {
+  text-decoration: none;
+  color: #493a2f;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 6px 0;
+  display: inline-block;
+  transition: color 0.2s ease;
+}
+
+.menu li a:hover {
+  color: #2f261f;
+}
+
+.border {
+  position: absolute;
+  bottom: -8px;
+  left: 0;
+  height: 2px;
+  width: 0;
+  background-color: #a47540;
+  transition: transform 0.3s ease, width 0.3s ease;
+}
+
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: auto;
+}
+
+.user-name {
+  font-size: 0.86rem;
+  color: #3e342b;
+  max-width: 130px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.signin-btn {
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #ab7a3f, #cb9c61);
+  color: white;
+  text-decoration: none;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+@media (max-width: 920px) {
+  .navbar {
+    height: auto;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 12px 14px;
+  }
+
+  .nav-center {
+    padding: 4px 0;
+    border: 0;
+    background: transparent;
+    order: 3;
+    width: 100%;
+    overflow-x: auto;
+  }
+
+  .menu {
+    justify-content: flex-start;
+    min-width: max-content;
+    padding: 8px 10px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.62);
+    border: 1px solid rgba(76, 56, 34, 0.14);
+  }
+}
