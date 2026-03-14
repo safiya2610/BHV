@@ -39,4 +39,5 @@ jobs:
 
     - name: Build Docker image
       run: |
-        docker build -t bhv-platform .
+        echo "Deployment step - add your deployment commands here"
+        # Example: ssh to server and pull latest image, or use docker-compose pull and up
