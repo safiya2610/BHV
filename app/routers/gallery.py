@@ -21,8 +21,10 @@ def require_user(request: Request, db: sqlite3.Connection = Depends(get_db)) -> 
     email = request.session.get("email")
     if not email:
         return RedirectResponse("/login", 303)
+
     if is_admin(request, db) and request.session.get("view_user"):
         email = request.session.get("view_user")
+
     return email
 
 
@@ -32,7 +34,12 @@ def gallery(
     user: str = Depends(require_user),
     db: sqlite3.Connection = Depends(get_db)
 ):
+    # Fix: if require_user returned redirect
+    if isinstance(user, RedirectResponse):
+        return user
+
     cur = db.cursor()
+
     cur.execute(
         "SELECT filename, metadata, narrative FROM images WHERE user_name=?",
         (user,)
@@ -52,7 +59,6 @@ def gallery(
             "current_user": user
         }
     )
-
 
 @router.post("/upload")
 async def upload_image(
