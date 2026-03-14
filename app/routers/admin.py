@@ -213,6 +213,7 @@ def generate_admin_images_csv(db) -> str:
         title = filename
         if metadata:
             try:
+                data = json.loads(request.body)
             except json.JSONDecodeError:
                 pass
 
