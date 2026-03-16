@@ -3,6 +3,10 @@ from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
 from db import get_db
 import json
+from fastapi.responses import StreamingResponse
+import io
+import csv
+from datetime import datetime
 
 router = APIRouter()
 templates = Jinja2Templates(directory="templates")
@@ -178,7 +182,7 @@ def generate_admin_users_csv(db) -> str:
                 formatted_join = dt.strftime('%Y-%m-%d')
             else:
                 formatted_join = "N/A"
-        except:
+        except (ValueError, TypeError):
             formatted_join = join_date or "N/A"
 
         writer.writerow([name or "N/A", email, is_admin, total_images, f"{storage_mb:.2f}", formatted_join])
@@ -209,9 +213,7 @@ def generate_admin_images_csv(db) -> str:
         title = filename
         if metadata:
             try:
-                meta_dict = json.loads(metadata)
-                title = meta_dict.get('title', filename)
-            except:
+            except json.JSONDecodeError:
                 pass
 
         # Format date
