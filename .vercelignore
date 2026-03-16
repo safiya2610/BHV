@@ -1,0 +1,11 @@
+.env
+users.db
+static/uploads/
+venv/
+__pycache__/
+*.pyc
+.DS_Store
+docker-compose.yml
+Dockerfile
+.dockerignore
+cleaned_data.json

@@ -20,11 +20,11 @@
 
   <div class="nav-right">
     {% if user %}
-      <img src="/static/images/profile_logo.png" class="user-icon">
+      <i class="fas fa-circle-user user-icon"></i>
       <span class="user-name">{{ user }}</span>
 
-      <a href="/logout">
-        <img src="/static/images/logout_logo.png" class="logout-icon">
+      <a href="/logout" class="logout-link">
+        <i class="fas fa-sign-out-alt logout-icon"></i>
       </a>
     {% else %}
       <a href="/login" class="signin-btn">Sign in</a>

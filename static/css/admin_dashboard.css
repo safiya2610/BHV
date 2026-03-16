@@ -147,6 +147,25 @@ body {
   grid-row: span 2;
 }
 
+.icon-placeholder-frame {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #f0d5c3 0%, #d9c5b8 100%);
+}
+
+.icon-placeholder-frame i {
+  font-size: 2.5rem;
+  color: #a47540;
+  opacity: 0.8;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.icon-placeholder-frame:hover i {
+  transform: scale(1.15);
+  opacity: 1;
+}
+
 .admin-table-wrap {
   border-radius: 24px;
   border: 1px solid var(--line);
