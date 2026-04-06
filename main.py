@@ -29,6 +29,8 @@ app = FastAPI(
     redoc_url="/api-redoc",
 )
 
+from fastapi.responses import RedirectResponse
+
 @app.get("/")
 async def root():
     return RedirectResponse(url="/login")
