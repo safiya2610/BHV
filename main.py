@@ -14,6 +14,10 @@ from app.routers.narrative import router as narrative_router
 from app.routers.admin import router as admin_router
 from app.routers.export import router as export_router
 
+@app.get("/")
+async def root():
+    return RedirectResponse(url="/login")
+
 logger = logging.getLogger("bhv")
 logger.setLevel(logging.INFO)
 handler = logging.StreamHandler(sys.stdout)
