@@ -5,8 +5,14 @@ authlib
 itsdangerous
 httpx
 jinja2
-python-jose
+python-jose[cryptography]
 numpy
 pillow
 scikit-image
 scikit-learn
+python-multipart
+starlette
+passlib[bcrypt]
+scipy
+opencv-python
+
