@@ -122,6 +122,7 @@ def login_page(request: Request):
         "google_auth_failed": "Google sign-in failed. Please try again.",
     }
     return templates.TemplateResponse(
+        request,
         "login.html",
         {
             "request": request,
@@ -147,6 +148,7 @@ def login_submit(
 
     if not user_row or not user_row["password"] or user_row["password"] != password:
         return templates.TemplateResponse(
+            request,
             "login.html",
             {
                 "request": request,
@@ -165,6 +167,7 @@ def login_submit(
 @router.get("/signup")
 def signup_page(request: Request):
     return templates.TemplateResponse(
+        request,
         "signup.html",
         {"request": request}
     )
@@ -183,8 +186,7 @@ def signup_submit(
     cur = db.cursor()
     cur.execute("SELECT 1 FROM users WHERE email = ?", (normalized_email,))
     if cur.fetchone():
-        return templates.TemplateResponse(
-            "signup.html",
+        return templates.TemplateResponse(            request,            "signup.html",
             {
                 "request": request,
                 "error": "An account with this email already exists.",
@@ -252,6 +254,7 @@ def docs_page(request: Request, db: sqlite3.Connection = Depends(get_db)):
             tag_counter[tag] += 1
 
     return templates.TemplateResponse(
+        request,
         "docs.html",
         {
             "request": request,

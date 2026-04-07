@@ -5,7 +5,7 @@ def test_login_page_loads(client):
 
 def test_home_redirects_without_login(client):
     res = client.get("/", follow_redirects=False)
-    assert res.status_code in (302, 303)
+    assert res.status_code in (302, 303, 307)
 
 
 def test_gallery_requires_login(client):

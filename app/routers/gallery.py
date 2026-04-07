@@ -51,6 +51,7 @@ def gallery(
     ]
 
     return templates.TemplateResponse(
+        request,
         "gallery.html",
         {
             "request": request,
@@ -170,8 +171,7 @@ def search_users(
         ]
         print(f"DEBUG: Found {len(images)} public images from users: {user_emails}")
 
-    return templates.TemplateResponse(
-        "gallery.html",
+    return templates.TemplateResponse(        request,        "gallery.html",
         {
             "request": request,
             "images": images,
