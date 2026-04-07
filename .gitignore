@@ -211,3 +211,4 @@ static/uploads/
 
 # Database files
 users.db
+testenv/
