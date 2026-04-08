@@ -111,8 +111,9 @@ def home(request: Request):
         return RedirectResponse("/login", 303)
 
     return templates.TemplateResponse(
-        "home.html",
-        {"request": request, "user": request.session["user"]}
+        request=request,
+        name="home.html",
+        context={"request": request, "user": request.session["user"]}
     )
 
 @router.get("/login")
@@ -122,9 +123,9 @@ def login_page(request: Request):
         "google_auth_failed": "Google sign-in failed. Please try again.",
     }
     return templates.TemplateResponse(
-        request,
-        "login.html",
-        {
+        request=request,
+        name="login.html",
+        context={
             "request": request,
             "error": error_map.get(error_code)
         }
@@ -148,9 +149,9 @@ def login_submit(
 
     if not user_row or not user_row["password"] or user_row["password"] != password:
         return templates.TemplateResponse(
-            request,
-            "login.html",
-            {
+            request=request,
+            name="login.html",
+            context={
                 "request": request,
                 "error": "Invalid email or password.",
                 "prefill_email": normalized_email
@@ -167,9 +168,9 @@ def login_submit(
 @router.get("/signup")
 def signup_page(request: Request):
     return templates.TemplateResponse(
-        request,
-        "signup.html",
-        {"request": request}
+        request=request,
+        name="signup.html",
+        context={"request": request}
     )
 
 @router.post("/signup")
@@ -186,8 +187,10 @@ def signup_submit(
     cur = db.cursor()
     cur.execute("SELECT 1 FROM users WHERE email = ?", (normalized_email,))
     if cur.fetchone():
-        return templates.TemplateResponse(            request,            "signup.html",
-            {
+        return templates.TemplateResponse(
+            request=request,
+            name="signup.html",
+            context={
                 "request": request,
                 "error": "An account with this email already exists.",
                 "prefill_name": normalized_name,
@@ -254,9 +257,9 @@ def docs_page(request: Request, db: sqlite3.Connection = Depends(get_db)):
             tag_counter[tag] += 1
 
     return templates.TemplateResponse(
-        request,
-        "docs.html",
-        {
+        request=request,
+        name="docs.html",
+        context={
             "request": request,
             "user": request.session.get("user"),
             "docs_entries": docs_entries,

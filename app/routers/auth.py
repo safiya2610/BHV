@@ -18,6 +18,7 @@ async def login_google(request: Request):
 
 @router.get("/google/callback")
 async def google_callback(request: Request, db=Depends(get_db)):
+    
     user = await google_callback_handler(request, db)
 
     if not user:

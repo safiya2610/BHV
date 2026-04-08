@@ -38,5 +38,3 @@ users.db
 static/uploads/
 cleaned_data.json
 
-# Other potential issues
-.qodo

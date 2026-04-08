@@ -51,9 +51,9 @@ def gallery(
     ]
 
     return templates.TemplateResponse(
-        request,
-        "gallery.html",
-        {
+        request=request,
+        name="gallery.html",
+        context={
             "request": request,
             "images": images,
             "profile_user": user,
@@ -85,7 +85,16 @@ async def upload_image(
     with open(filepath, "wb") as f:
         f.write(await image.read())
 
-    metadata = detect_fuzzy_emotion(filepath)
+    try:
+        metadata = detect_fuzzy_emotion(filepath)
+    except Exception as e:
+        print(f"Error processing image {filename}: {e}")
+        if os.path.exists(filepath):
+            try:
+                os.remove(filepath)
+            except OSError:
+                pass
+        return RedirectResponse("/gallery?error=invalid_image", 303)
 
     cur = db.cursor()
     cur.execute(
@@ -171,8 +180,10 @@ def search_users(
         ]
         print(f"DEBUG: Found {len(images)} public images from users: {user_emails}")
 
-    return templates.TemplateResponse(        request,        "gallery.html",
-        {
+    return templates.TemplateResponse(
+        request=request,
+        name="gallery.html",
+        context={
             "request": request,
             "images": images,
             "search_query": q,

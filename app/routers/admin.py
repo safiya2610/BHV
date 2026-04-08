@@ -47,9 +47,9 @@ def admin_dashboard(request: Request, db=Depends(get_db)):
     total_images = cur.fetchone()[0]
 
     return templates.TemplateResponse(
-        request,
-        "admin_dashboard.html",
-        {
+        request=request,
+        name="admin_dashboard.html",
+        context={
             "request": request,
             "users": users,
             "user": request.session.get("user"),
@@ -87,8 +87,10 @@ def admin_user_gallery(user_id: int, request: Request, db=Depends(get_db)):
         meta = json.loads(r[1]) if r[1] else None
         images.append((r[0], meta, r[2], r[3]))
 
-    return templates.TemplateResponse(        request,        "admin_user_gallery.html",
-        {
+    return templates.TemplateResponse(
+        request=request,
+        name="admin_user_gallery.html",
+        context={
             "request": request,
             "images": images,
             "profile_user": email
