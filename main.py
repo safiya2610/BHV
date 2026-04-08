@@ -27,7 +27,7 @@ app = FastAPI(
     redoc_url="/api-redoc",
 )
 
-init_db()
+#init_db()
 
 app.add_middleware(SessionMiddleware, secret_key=SECRET_KEY)
 app.mount("/static", StaticFiles(directory="static"), name="static")
