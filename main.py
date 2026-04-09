@@ -1,8 +1,10 @@
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from starlette.middleware.sessions import SessionMiddleware
+from uvicorn.middleware.proxy_headers import ProxyHeadersMiddleware
 import logging
 import sys
+import os
 
 from config import SECRET_KEY
 from db import init_db
@@ -27,9 +29,19 @@ app = FastAPI(
     redoc_url="/api-redoc",
 )
 
+
+app.add_middleware(ProxyHeadersMiddleware, trusted_hosts="*")
+
 init_db()
 
-app.add_middleware(SessionMiddleware, secret_key=SECRET_KEY)
+is_production = os.environ.get("RENDER") is not None
+
+app.add_middleware(
+    SessionMiddleware, 
+    secret_key=SECRET_KEY,
+    same_site="none" if is_production else "lax",
+    https_only=is_production
+)
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 app.include_router(pages_router)
